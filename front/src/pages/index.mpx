@@ -1,0 +1,2530 @@
+<template>
+  <view class="app-shell" style="--status-bar-height: {{statusBarHeight}}px">
+    <view wx:if="{{currentPage === 'store'}}" class="home-screen">
+      <image class="home-image" mode="aspectFill" src="{{homeImage}}" />
+      <view class="home-atmosphere"></view>
+      <view class="home-brand">
+        <view class="brand-wordmark">{{brandName}}</view>
+      </view>
+      <view class="home-actions">
+        <view class="start-order" bindtap="startOrdering">
+          <text class="action-title">开始点单</text>
+          <text class="action-subtitle">Start Order</text>
+        </view>
+        <view class="action-rule"></view>
+        <view class="member-entry" bindtap="openMembership">
+          <text class="action-title">我的</text>
+          <text class="action-subtitle">My Account</text>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{currentPage === 'membership'}}" class="destination-screen profile-screen">
+      <scroll-view class="profile-scroll" scroll-y>
+        <view class="profile-hero">
+          <image class="profile-hero-image" mode="aspectFill" src="{{homeImage}}" />
+          <view class="profile-hero-shade"></view>
+          <view class="profile-brand">{{brandName}}</view>
+        </view>
+        <view class="profile-content">
+          <view class="profile-summary">
+            <view class="profile-user-row">
+              <view class="profile-avatar"><image src="{{userIcon}}" /></view>
+              <view class="profile-user-copy">
+                <view class="profile-user-name">咖啡会员</view>
+                <view class="profile-user-caption">欢迎来到 {{brandName}}</view>
+              </view>
+              <image class="profile-user-arrow" src="{{chevronIcon}}" />
+            </view>
+            <view class="profile-stats">
+              <view class="profile-stat">
+                <image src="{{starIcon}}" />
+                <text class="profile-stat-value">—</text>
+                <text class="profile-stat-label">积分商城</text>
+              </view>
+              <view class="profile-stat">
+                <image src="{{receiptIcon}}" />
+                <text class="profile-stat-value">—</text>
+                <text class="profile-stat-label">MANER券</text>
+              </view>
+              <view class="profile-stat">
+                <image src="{{cartIcon}}" />
+                <text class="profile-stat-value">—</text>
+                <text class="profile-stat-label">MANER礼</text>
+              </view>
+            </view>
+          </view>
+          <view class="profile-tools">
+            <view class="profile-tool"><image src="{{starIcon}}" /><text>积分明细</text></view>
+            <view class="profile-tool"><image src="{{userIcon}}" /><text>会员码</text></view>
+            <view class="profile-tool"><image src="{{receiptIcon}}" /><text>发票助手</text></view>
+            <view class="profile-tool"><image src="{{coffeeIcon}}" /><text>联系客服</text></view>
+            <view class="profile-tool"><image src="{{sparklesIcon}}" /><text>消息中心</text></view>
+            <view class="profile-tool" bindtap="openMyOrders"><image src="{{receiptIcon}}" /><text>我的订单</text></view>
+            <view class="profile-tool" bindtap="openAddressBook"><image src="{{mapPinIcon}}" /><text>地址管理</text></view>
+            <view class="profile-tool"><image src="{{chevronIcon}}" /><text>更多</text></view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+    <view wx:if="{{currentPage === 'addresses'}}" class="destination-screen addresses-screen">
+      <view class="addresses-header">
+        <view class="addresses-back" bindtap="closeAddressBook">‹</view>
+        <view class="addresses-heading">
+          <text class="addresses-title">收货地址</text>
+          <text class="addresses-subtitle">管理配送信息</text>
+        </view>
+      </view>
+      <view class="addresses-body">
+        <view wx:if="{{addressesLoading && userAddresses.length === 0}}" class="address-state">正在加载地址</view>
+        <view wx:if="{{!addressesLoading && addressesError && userAddresses.length === 0}}" class="address-state">
+          <text>地址加载失败</text>
+          <view class="address-state-actions">
+            <view class="address-retry" bindtap="loadAddresses">重新加载</view>
+            <view class="address-retry address-add-first" bindtap="openNewAddress">＋ 新增地址</view>
+          </view>
+        </view>
+        <view wx:if="{{!addressesLoading && !addressesError && userAddresses.length === 0}}" class="address-state">
+          <text>还没有收货地址</text>
+          <view class="address-retry address-add-first" bindtap="openNewAddress">＋ 新增地址</view>
+        </view>
+        <scroll-view wx:if="{{userAddresses.length > 0}}" class="addresses-list" scroll-y refresher-enabled="{{true}}" refresher-triggered="{{addressesRefreshing}}" bindrefresherrefresh="refreshAddresses">
+          <view wx:for="{{userAddresses}}" wx:key="id" class="address-card">
+            <view class="address-card-main" bindtap="editAddress" data-id="{{item.id}}">
+              <view class="address-recipient-row">
+                <text class="address-recipient">{{item.recipient}}</text>
+                <text class="address-phone">{{item.phone}}</text>
+                <text wx:if="{{item.isDefault}}" class="address-default-label">默认</text>
+              </view>
+              <view class="address-location">{{item.province}} {{item.city}} {{item.district}} {{item.detail}}</view>
+            </view>
+            <view class="address-card-actions">
+              <view wx:if="{{!item.isDefault}}" class="address-action" bindtap="makeDefaultAddress" data-id="{{item.id}}">设为默认</view>
+              <view class="address-action" bindtap="editAddress" data-id="{{item.id}}">编辑</view>
+              <view class="address-action address-action-delete" bindtap="removeAddress" data-id="{{item.id}}">删除</view>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+      <view wx:if="{{userAddresses.length > 0}}" class="addresses-add-footer">
+        <view class="addresses-add-button" bindtap="openNewAddress">＋ 新增地址</view>
+      </view>
+    </view>
+    <page-container show="{{addressFormVisible || storePickerVisible || selectedProduct}}" position="bottom" duration="300" overlay="{{true}}" round="{{true}}" close-on-slide-down="{{true}}" bind:beforeleave="closeNativeSheet" bind:clickoverlay="closeNativeSheet">
+        <view wx:if="{{addressFormVisible}}" class="address-form-sheet">
+          <view class="address-form-header">
+            <text>{{selectedAddressId ? '编辑地址' : '新增地址'}}</text>
+            <view class="address-form-close" bindtap="closeAddressForm">×</view>
+          </view>
+          <scroll-view class="address-form-scroll" scroll-y>
+            <view wx:if="{{addressFormError}}" class="address-form-error">{{addressFormError}}</view>
+            <view class="address-field">
+              <text class="address-field-label">收件人</text>
+              <input class="address-input" value="{{addressForm.recipient}}" placeholder="姓名" maxlength="64" bindinput="onAddressInput" data-field="recipient" />
+            </view>
+            <view class="address-field">
+              <text class="address-field-label">手机号</text>
+              <input class="address-input" value="{{addressForm.phone}}" placeholder="联系电话" type="number" maxlength="24" bindinput="onAddressInput" data-field="phone" />
+            </view>
+            <view class="address-field">
+              <text class="address-field-label">所在地区</text>
+              <picker mode="region" value="{{addressRegion}}" bindchange="onAddressRegionChange">
+                <view class="address-region {{addressForm.province ? '' : 'address-placeholder'}}">{{addressForm.province || '请选择省/市/区'}} {{addressForm.city}} {{addressForm.district}}</view>
+              </picker>
+            </view>
+            <view class="address-field address-field-detail">
+              <text class="address-field-label">详细地址</text>
+              <textarea class="address-textarea" value="{{addressForm.detail}}" placeholder="街道、楼栋、门牌号" maxlength="255" bindinput="onAddressInput" data-field="detail" />
+            </view>
+            <view class="address-default-row">
+              <text>设为默认地址</text>
+              <switch checked="{{addressForm.isDefault}}" color="#52745c" bindchange="onAddressDefaultChange" />
+            </view>
+          </scroll-view>
+          <view class="address-form-footer">
+            <view class="address-save-button {{addressSaving ? 'address-save-disabled' : ''}}" bindtap="saveAddress">{{addressSaving ? '保存中…' : '保存地址'}}</view>
+          </view>
+        </view>
+        <view wx:elif="{{storePickerVisible}}" class="store-picker-sheet">
+          <view class="store-picker-header">
+            <text>选择门店</text>
+            <view class="store-picker-close" bindtap="closeStorePicker">×</view>
+          </view>
+          <scroll-view class="store-picker-list" scroll-y>
+            <view wx:for="{{stores}}" wx:key="storeId" class="store-option" bindtap="selectStore" data-id="{{item.storeId}}">
+              <view class="store-option-copy">
+                <text class="store-option-name">{{item.name}}</text>
+                <text wx:if="{{item.address}}" class="store-option-address">{{item.address}}</text>
+              </view>
+              <view class="store-option-status">
+                <text wx:if="{{item.isTest}}" class="store-option-test">测试</text>
+                <text wx:if="{{item.storeId === storeId}}" class="store-option-selected">当前</text>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+        <view wx:elif="{{selectedProduct}}" class="modal-sheet">
+          <view class="modal-hero">
+            <image class="modal-product-image" mode="aspectFit" src="{{selectedProduct.image}}" />
+            <view class="modal-close" bindtap="closeProduct">×</view>
+          </view>
+          <scroll-view class="modal-content" scroll-y>
+            <view class="modal-product-heading">
+              <view class="modal-product-name">{{selectedProduct.name}}</view>
+              <image class="favorite-icon" src="{{favoriteIcon}}" />
+            </view>
+            <view class="modal-description">{{selectedProduct.description}}</view>
+            <view wx:for="{{selectedProduct.options}}" wx:for-item="group" wx:for-index="groupIndex" wx:key="id" class="option-group">
+              <view class="option-title">{{group.title}}</view>
+              <view class="option-list">
+                <view wx:for="{{group.values}}" wx:for-item="option" wx:for-index="optionIndex" wx:key="label" class="option-chip {{group.selectedIndex === optionIndex ? 'option-selected' : ''}}" bindtap="selectProductOption" data-group-index="{{groupIndex}}" data-option-index="{{optionIndex}}">
+                  {{option.label}}{{option.extraPrice ? ' ¥ ' + option.extraPrice : ''}}
+                </view>
+              </view>
+            </view>
+          </scroll-view>
+          <view class="modal-footer">
+            <view class="quantity-row">
+              <view class="selected-summary">{{selectedSummary}}</view>
+              <view class="quantity-control">
+                <view class="quantity-button quantity-minus" bindtap="decreaseQuantity">−</view>
+                <text class="quantity-value">{{quantity}}</text>
+                <view class="quantity-button quantity-plus" bindtap="increaseQuantity">+</view>
+              </view>
+            </view>
+            <view class="add-cart-button" bindtap="addToCart">¥ {{selectedPrice}} 加入购物车</view>
+          </view>
+        </view>
+    </page-container>
+    <view wx:if="{{currentPage === 'orders'}}" class="destination-screen orders-screen">
+      <view class="addresses-header">
+        <view class="addresses-back" catchtap="closeAddressBook">‹</view>
+        <view class="addresses-heading">
+          <text class="addresses-title">我的订单</text>
+          <text class="addresses-subtitle">订单记录</text>
+        </view>
+      </view>
+      <view class="orders-body">
+        <scroll-view class="orders-list" scroll-y lower-threshold="120" bindscrolltolower="loadMoreMyOrders" refresher-enabled="{{true}}" refresher-triggered="{{ordersRefreshing}}" bindrefresherrefresh="refreshMyOrders">
+          <view wx:if="{{ordersLoading && userOrders.length === 0}}" class="orders-state">
+            <view class="orders-loading-spinner"></view>
+            <text>正在加载订单</text>
+          </view>
+          <view wx:if="{{!ordersLoading && ordersError && userOrders.length === 0}}" class="orders-state">
+            <text>订单加载失败</text>
+            <view class="orders-retry" bindtap="loadMyOrders">重新加载</view>
+          </view>
+          <view wx:if="{{!ordersLoading && !ordersError && userOrders.length === 0}}" class="orders-state">暂无订单</view>
+          <view wx:for="{{userOrders}}" wx:key="orderNo" class="orders-card">
+            <view class="orders-store-row">
+              <image src="{{mapPinIcon}}" />
+              <text>{{item.storeName}}</text>
+              <text class="orders-fulfillment-label">{{item.fulfillmentTypeText}}</text>
+            </view>
+            <view class="orders-card-header">
+              <text class="orders-created-at">{{item.createdAtText}}</text>
+              <text class="orders-status {{item.status === 'paid' ? 'orders-status-paid' : 'orders-status-other'}}">{{item.statusText}}</text>
+            </view>
+            <view wx:for="{{item.items}}" wx:for-item="product" wx:key="cartItemId" class="orders-product">
+              <image wx:if="{{product.image}}" class="orders-product-image" mode="aspectFill" src="{{product.image}}" />
+              <text class="orders-product-name">{{product.name}} ×{{product.quantity}}</text>
+              <text class="orders-product-total">¥ {{product.lineAmountText}}</text>
+            </view>
+            <view class="orders-card-footer">
+              <text class="orders-order-no">订单号 {{item.orderNo}}</text>
+              <text class="orders-total">合计 ¥ {{item.totalAmountText}}</text>
+            </view>
+          </view>
+          <view wx:if="{{userOrders.length > 0}}" class="orders-pagination">
+            <view wx:if="{{ordersLoadingMore}}" class="orders-pagination-loading">
+              <view class="orders-loading-spinner"></view>
+              <text>正在加载更多订单</text>
+            </view>
+            <text wx:if="{{!ordersLoadingMore && ordersLoadMoreError}}" class="orders-pagination-retry" bindtap="loadMoreMyOrders">加载失败，点击重试</text>
+            <text wx:if="{{!ordersLoadingMore && !ordersLoadMoreError && ordersHasMore}}">上拉加载更多</text>
+            <text wx:if="{{!ordersLoadingMore && !ordersLoadMoreError && !ordersHasMore}}" class="orders-pagination-end">没有更多订单</text>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+    <view wx:if="{{currentPage === 'menu'}}" class="order-page">
+    <view class="store-panel">
+      <view class="store-heading">
+        <view class="store-name" bindtap="openStorePicker"><image class="store-icon" src="{{mapPinIcon}}" /> {{storeDisplayName}}<text wx:if="{{activeStore && activeStore.isTest}}" class="store-test-label">测试</text><image class="store-arrow" src="{{chevronIcon}}" /></view>
+        <view class="store-actions">
+          <view class="map-button" bindtap="openStoreMap"><image class="map-button-icon" src="{{mapIcon}}" /><text>地图</text></view>
+        </view>
+      </view>
+      <view class="store-distance store-distance-action" bindtap="locateNearestStore">{{storeDistance}}</view>
+    </view>
+    <view class="order-content">
+      <scroll-view class="category-list" scroll-y>
+        <view wx:for="{{series}}" wx:key="id" class="category {{activeSeriesId === item.id ? 'category-active' : ''}}" bindtap="selectSeries" data-id="{{item.id}}">
+          <image class="category-icon" src="{{item.icon}}" /><text>{{item.name}}</text><view wx:if="{{item.badge}}" class="category-badge">{{item.badge}}</view>
+        </view>
+      </scroll-view>
+      <scroll-view class="menu-list" scroll-y>
+        <swiper class="campaign" circular autoplay interval="4000" duration="500" indicator-dots indicator-color="rgba(255,255,255,.5)" indicator-active-color="#ffffff">
+          <swiper-item wx:for="{{campaignBanners}}" wx:key="title">
+            <view class="campaign-slide">
+              <image class="campaign-image" mode="aspectFill" src="{{item.image}}" />
+              <view class="campaign-shade"></view>
+              <view class="campaign-copy"><text class="campaign-kicker">{{brandName}}</text><text class="campaign-title">{{item.title}}</text><text class="campaign-price">{{item.subtitle}}</text></view>
+            </view>
+          </swiper-item>
+        </swiper>
+        <view class="section-title">{{activeSeries.name}}</view>
+        <view wx:for="{{activeSeries.products}}" wx:key="id" class="product" bindtap="openProduct" data-id="{{item.id}}">
+          <image class="product-image" mode="aspectFill" src="{{item.image}}" />
+          <view class="product-info"><view class="product-name">{{item.name}}</view><view class="product-description">{{item.description}}</view><view class="product-price">¥ {{item.price}}</view></view>
+        </view>
+        <view class="menu-padding"></view>
+      </scroll-view>
+    </view>
+    <view class="menu-cart-entry cart-entry" bindtap="openCart" aria-label="打开购物车">
+      <image class="cart-entry-icon" src="{{cartIcon}}" />
+      <text>购物车</text>
+      <view wx:if="{{cartCount > 0}}" class="cart-entry-badge">{{cartCount}}</view>
+    </view>
+    </view>
+    <view wx:if="{{currentPage === 'cart'}}" class="cart-page" style="--status-bar-height: {{statusBarHeight}}px">
+      <view class="cart-header">
+        <view class="cart-back" bindtap="closeCart" aria-label="返回点单">‹</view>
+        <view class="cart-heading">
+          <text class="cart-title">购物车</text>
+          <text class="cart-count-label">{{cartCount}} 件商品</text>
+        </view>
+      </view>
+      <scroll-view class="cart-scroll" scroll-y>
+        <view wx:if="{{cartLines.length === 0}}" class="cart-empty">
+          <image class="cart-empty-icon" src="{{cartIcon}}" />
+          <view class="cart-empty-title">购物车还是空的</view>
+          <view class="cart-empty-action" bindtap="closeCart">去点单</view>
+        </view>
+        <view wx:else class="cart-items">
+          <view wx:for="{{cartLines}}" wx:key="id" class="cart-item">
+            <image class="cart-product-image" mode="aspectFill" src="{{item.image}}" />
+            <view class="cart-item-main">
+              <view class="cart-item-top">
+                <view class="cart-item-name">{{item.name}}</view>
+                <view class="cart-remove" bindtap="removeCartItem" data-id="{{item.id}}">删除</view>
+              </view>
+              <view class="cart-item-options">{{item.options}}</view>
+              <view class="cart-item-bottom">
+                <view class="cart-item-price">¥ {{item.lineTotal}}</view>
+                <view class="cart-quantity-control">
+                  <view class="cart-quantity-button" bindtap="changeCartQuantity" data-id="{{item.id}}" data-delta="-1" aria-label="减少数量">−</view>
+                  <text class="cart-quantity-value">{{item.quantity}}</text>
+                  <view class="cart-quantity-button cart-quantity-plus" bindtap="changeCartQuantity" data-id="{{item.id}}" data-delta="1" aria-label="增加数量">+</view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+      <view wx:if="{{cartLines.length > 0}}" class="cart-footer">
+        <view class="cart-fulfillment-row">
+          <text class="cart-fulfillment-label">用餐方式</text>
+          <view class="cart-fulfillment-segment">
+            <view class="cart-fulfillment-option {{fulfillmentType === 'delivery' ? 'cart-fulfillment-selected' : ''}}" bindtap="selectFulfillmentType" data-type="delivery">外送</view>
+            <view class="cart-fulfillment-option {{fulfillmentType === 'dine_in' ? 'cart-fulfillment-selected' : ''}}" bindtap="selectFulfillmentType" data-type="dine_in">堂食</view>
+          </view>
+        </view>
+        <view class="cart-footer-main">
+          <view class="cart-total">
+            <text class="cart-total-label">合计</text>
+            <text class="cart-total-value">¥ {{cartTotal}}</text>
+          </view>
+          <view class="cart-footer-actions">
+            <view class="cart-continue" bindtap="closeCart">继续点单</view>
+            <button class="cart-pay" loading="{{paying}}" disabled="{{paying}}" bindtap="payNow">立即支付</button>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{currentPage === 'payment-success'}}" class="payment-success-page" style="--status-bar-height: {{statusBarHeight}}px">
+      <view class="payment-success-header">
+        <view class="payment-success-check">✓</view>
+        <view class="payment-success-title">支付成功</view>
+        <view class="payment-success-subtitle">订单已完成</view>
+      </view>
+      <scroll-view class="payment-success-content" scroll-y>
+        <view class="payment-success-amount">¥ {{successOrder.totalAmountText}}</view>
+        <view class="payment-success-caption">实付金额</view>
+        <view class="payment-success-meta">
+          <view class="payment-success-meta-row"><text>订单编号</text><text class="payment-success-order-no">{{successOrder.orderNo}}</text></view>
+          <view class="payment-success-meta-row"><text>用餐方式</text><text>{{successOrder.fulfillmentTypeText}}</text></view>
+          <view class="payment-success-meta-row"><text>支付时间</text><text>{{successOrder.paidAtText || '已确认'}}</text></view>
+        </view>
+        <view class="payment-success-items">
+          <view class="payment-success-section-title">商品明细</view>
+          <view wx:for="{{successOrder.items}}" wx:key="cartItemId" class="payment-success-item">
+            <view class="payment-success-item-main">
+              <view class="payment-success-item-name">{{item.name}}</view>
+              <view wx:if="{{item.options}}" class="payment-success-item-options">{{item.options}}</view>
+            </view>
+            <view class="payment-success-item-quantity">×{{item.quantity}}</view>
+            <view class="payment-success-item-total">¥ {{item.lineAmountText}}</view>
+          </view>
+        </view>
+      </scroll-view>
+      <view class="payment-success-footer">
+        <view class="payment-success-return" bindtap="returnToMenu">继续点单</view>
+      </view>
+    </view>
+    <view wx:if="{{currentPage !== 'store' && currentPage !== 'cart' && currentPage !== 'payment-success'}}" class="bottom-nav">
+      <view wx:for="{{navigation}}" wx:key="page" class="nav-item {{currentPage === item.page || ((currentPage === 'orders' || currentPage === 'addresses') && item.page === 'membership') ? 'nav-active' : ''}}" bindtap="changePage" data-page="{{item.page}}">
+        <image class="nav-icon" src="{{item.icon}}" />
+        <text>{{item.label}}</text>
+        <text class="nav-english">{{item.english}}</text>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import mpx, { createPage } from '@mpxjs/core'
+import { mapState, mapStores } from '@mpxjs/pinia'
+import { useMenuStore } from '../store/menu'
+import { createPaymentOrder, createUserAddress, deleteUserAddress, getMyPaymentOrders, getPaymentOrder, getUserAddresses, loginWithWechat, updateUserAddress } from '../api/menu'
+import bannerImage from '../assets/coffee/banner.jpg'
+import roseLatteImage from '../assets/coffee/rose-latte.jpg'
+import butterLatteImage from '../assets/coffee/butter-latte.jpg'
+import homeImage from '../assets/coffee/store-interior.jpg'
+import mapPinIcon from '../assets/icons/map-pin.svg'
+import mapIcon from '../assets/icons/map.svg'
+import chevronIcon from '../assets/icons/chevron-right.svg'
+import cartIcon from '../assets/icons/shopping-bag.svg'
+import houseIcon from '../assets/icons/house.svg'
+import receiptIcon from '../assets/icons/receipt-text.svg'
+import userIcon from '../assets/icons/user-round.svg'
+import starIcon from '../assets/icons/star.svg'
+import coffeeIcon from '../assets/icons/coffee.svg'
+import sparklesIcon from '../assets/icons/sparkles.svg'
+
+function formatMoney(amountFen) {
+  return (Number(amountFen || 0) / 100).toFixed(2)
+}
+
+function formatPaidAt(value) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  const pad = part => String(part).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
+function formatOrderStatus(status) {
+  const labels = {
+    pending: '待支付',
+    paid: '已支付',
+    closed: '已关闭',
+    refunded: '已退款'
+  }
+  return labels[status] || '处理中'
+}
+
+function formatFulfillmentType(type) {
+  return type === 'delivery' ? '外送' : '堂食'
+}
+
+function calculateDistanceKm(latitude, longitude, storeLatitude, storeLongitude) {
+  const radians = degrees => degrees * Math.PI / 180
+  const latitudeDelta = radians(storeLatitude - latitude)
+  const longitudeDelta = radians(storeLongitude - longitude)
+  const haversine = Math.sin(latitudeDelta / 2) ** 2 +
+    Math.cos(radians(latitude)) * Math.cos(radians(storeLatitude)) *
+    Math.sin(longitudeDelta / 2) ** 2
+
+  return 6371 * 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine))
+}
+
+createPage({
+  data: {
+    currentPage: 'store',
+    paying: false,
+    fulfillmentType: 'dine_in',
+    storeReady: false,
+    pendingStartOrdering: false,
+    successOrder: { items: [] },
+    ordersLoading: false,
+    ordersRefreshing: false,
+    ordersLoadingMore: false,
+    ordersError: false,
+    ordersLoadMoreError: false,
+    ordersHasMore: false,
+    ordersCursor: null,
+    userOrders: [],
+    userAddresses: [],
+    addressesLoading: false,
+    addressesRefreshing: false,
+    addressesError: false,
+    addressFormVisible: false,
+    addressSaving: false,
+    addressFormError: '',
+    addressReturnPage: '',
+    selectedAddressId: 0,
+    addressRegion: [],
+    addressForm: {
+      recipient: '',
+      phone: '',
+      province: '',
+      city: '',
+      district: '',
+      detail: '',
+      isDefault: false
+    },
+    storeDisplayName: '',
+    storePickerVisible: false,
+    statusBarHeight: 20,
+    storeDistance: '点击定位查看附近门店',
+    homeImage,
+    mapPinIcon,
+    mapIcon,
+    chevronIcon,
+    cartIcon,
+    userIcon,
+    receiptIcon,
+    starIcon,
+    coffeeIcon,
+    sparklesIcon,
+    favoriteIcon: starIcon,
+    campaignBanners: [
+      { title: '秋日拿铁', subtitle: '香浓限定 ¥25', image: bannerImage },
+      { title: '玫瑰米酿', subtitle: '季节新品 ¥20', image: roseLatteImage },
+      { title: '黄油 SOE', subtitle: '醇香限定 ¥20', image: butterLatteImage }
+    ],
+    navigation: [
+      { page: 'store', label: '首页', english: 'Home', icon: houseIcon },
+      { page: 'menu', label: '开始点单', english: 'Start Order', icon: receiptIcon },
+      { page: 'membership', label: '我的', english: 'My', icon: userIcon }
+    ]
+  },
+  computed: {
+    ...mapStores(useMenuStore),
+    ...mapState(useMenuStore, ['brandName', 'series', 'activeSeries', 'activeSeriesId', 'selectedProduct', 'selectedPrice', 'selectedSummary', 'quantity', 'cartLines', 'cartCount', 'cartTotal', 'activeStore', 'stores', 'storeId'])
+  },
+  onLoad() {
+    const systemInfo = mpx.getSystemInfoSync()
+    this.statusBarHeight = systemInfo.statusBarHeight || 20
+    this.loginOnStartup()
+    mpx.setNavigationBarColor({
+      frontColor: '#000000',
+      backgroundColor: '#ffffff'
+    })
+    this.initializeStore()
+  },
+  onShow() {
+    if (this.currentPage === 'menu' && this.storeReady) this.updateStoreDistance()
+  },
+  methods: {
+    async initializeStore() {
+      try {
+        const store = await this.menuStore.loadStores()
+        this.storeDisplayName = store.name
+        await this.menuStore.loadMenu()
+        this.storeReady = true
+        if (this.pendingStartOrdering) {
+          this.pendingStartOrdering = false
+          this.startOrdering()
+        }
+      } catch (error) {
+        this.pendingStartOrdering = false
+        mpx.showToast({ title: '门店或菜单加载失败，请检查网络', icon: 'none' })
+      }
+    },
+    async loginOnStartup() {
+      try {
+        const login = await mpx.login()
+        if (!login || !login.code) throw new Error('WeChat login code is missing')
+        await loginWithWechat(this.menuStore.merchantId, login.code)
+      } catch (error) {
+        mpx.showToast({ title: '登录暂不可用，支付时将重试', icon: 'none' })
+      }
+    },
+    startOrdering() {
+      if (!this.storeReady) {
+        this.pendingStartOrdering = true
+        mpx.showToast({ title: '正在定位并进入最近门店…', icon: 'loading', duration: 10000 })
+        return
+      }
+      this.currentPage = 'menu'
+      mpx.showToast({ title: '正在定位并进入最近门店…', icon: 'loading', duration: 10000 })
+      this.locateNearestStore(true)
+    },
+    async locateNearestStore(showProgress = false) {
+      if (!this.storeReady) return
+      this.storeDistance = '正在定位附近门店…'
+      try {
+        const location = await mpx.getLocation({ type: 'gcj02' })
+        const store = await this.menuStore.selectNearestStore(location)
+        if (store) this.storeDisplayName = store.name
+        this.updateStoreDistance(location)
+        if (showProgress) mpx.hideToast()
+      } catch (error) {
+        this.storeDistance = '开启定位后查看门店距离'
+        if (showProgress) {
+          mpx.hideToast()
+          mpx.showToast({ title: '定位失败，已进入当前门店', icon: 'none' })
+        }
+      }
+    },
+    openStorePicker() {
+      this.storePickerVisible = true
+    },
+    closeStorePicker() {
+      this.storePickerVisible = false
+    },
+    closeNativeSheet() {
+      this.storePickerVisible = false
+      this.addressFormVisible = false
+      this.menuStore.closeProduct()
+    },
+    async selectStore(event) {
+      const storeId = event.currentTarget.dataset.id
+      if (storeId === this.menuStore.storeId) {
+        this.closeStorePicker()
+        return
+      }
+      try {
+        await this.menuStore.selectStore(storeId)
+        this.storeDisplayName = this.menuStore.activeStore.name
+        this.closeStorePicker()
+        await this.updateSelectedStoreDistance()
+      } catch (error) {
+        mpx.showToast({ title: '切换门店失败，请重试', icon: 'none' })
+      }
+    },
+    openMembership() {
+      this.currentPage = 'membership'
+    },
+    openAddressBook() {
+      this.addressReturnPage = ''
+      this.currentPage = 'addresses'
+      this.loadAddresses()
+    },
+    closeAddressBook() {
+      this.closeNativeSheet()
+      this.addressReturnPage = ''
+      this.currentPage = 'membership'
+    },
+    async loadAddresses() {
+      if (this.addressesLoading) {
+        this.addressesRefreshing = false
+        return
+      }
+      this.addressesLoading = true
+      this.addressesError = false
+      try {
+        const login = await mpx.login()
+        if (!login || !login.code) throw new Error('WeChat login code is missing')
+        const result = await getUserAddresses(this.menuStore.merchantId, login.code)
+        this.userAddresses = result.addresses || []
+      } catch (error) {
+        this.addressesError = true
+      } finally {
+        this.addressesLoading = false
+        this.addressesRefreshing = false
+      }
+    },
+    refreshAddresses() {
+      this.addressesRefreshing = true
+      this.loadAddresses()
+    },
+    openNewAddress() {
+      this.selectedAddressId = 0
+      this.addressFormError = ''
+      this.addressRegion = []
+      this.addressForm = {
+        recipient: '',
+        phone: '',
+        province: '',
+        city: '',
+        district: '',
+        detail: '',
+        isDefault: this.userAddresses.length === 0
+      }
+      this.addressFormVisible = true
+    },
+    editAddress(event) {
+      const address = this.userAddresses.find(item => item.id === Number(event.currentTarget.dataset.id))
+      if (!address) return
+      this.selectedAddressId = address.id
+      this.addressFormError = ''
+      this.addressRegion = [address.province, address.city, address.district]
+      this.addressForm = {
+        recipient: address.recipient,
+        phone: address.phone,
+        province: address.province,
+        city: address.city,
+        district: address.district,
+        detail: address.detail,
+        isDefault: address.isDefault
+      }
+      this.addressFormVisible = true
+    },
+    closeAddressForm() {
+      this.addressFormVisible = false
+      this.addressFormError = ''
+    },
+    onAddressInput(event) {
+      const field = event.currentTarget.dataset.field
+      this.addressForm = { ...this.addressForm, [field]: event.detail.value }
+      this.addressFormError = ''
+    },
+    onAddressRegionChange(event) {
+      const [province = '', city = '', district = ''] = event.detail.value || []
+      this.addressRegion = event.detail.value || []
+      this.addressForm = { ...this.addressForm, province, city, district }
+      this.addressFormError = ''
+    },
+    onAddressDefaultChange(event) {
+      this.addressForm = { ...this.addressForm, isDefault: event.detail.value }
+    },
+    async saveAddress() {
+      if (this.addressSaving) return
+      const address = {
+        ...this.addressForm,
+        recipient: this.addressForm.recipient.trim(),
+        phone: this.addressForm.phone.trim(),
+        province: this.addressForm.province.trim(),
+        city: this.addressForm.city.trim(),
+        district: this.addressForm.district.trim(),
+        detail: this.addressForm.detail.trim()
+      }
+      const phoneDigits = (address.phone.match(/[0-9]/g) || []).length
+      let validationMessage = ''
+      if (!address.recipient) {
+        validationMessage = '请填写收件人姓名'
+      } else if (Array.from(address.recipient).length > 64) {
+        validationMessage = '收件人姓名不能超过64个字符'
+      } else if (!/^[0-9+() -]{6,24}$/.test(address.phone) || phoneDigits < 6) {
+        validationMessage = '请输入有效联系电话（至少6位数字）'
+      } else if (!address.province || !address.city || !address.district) {
+        validationMessage = '请选择完整的省、市、区'
+      } else if (!address.detail) {
+        validationMessage = '请填写街道、楼栋和门牌号'
+      } else if (Array.from(address.detail).length > 255) {
+        validationMessage = '详细地址不能超过255个字符'
+      }
+      if (validationMessage) {
+        this.addressFormError = validationMessage
+        return
+      }
+      this.addressFormError = ''
+      this.addressSaving = true
+      try {
+        const login = await mpx.login()
+        if (!login || !login.code) throw new Error('WeChat login code is missing')
+        if (this.selectedAddressId) {
+          await updateUserAddress(this.menuStore.merchantId, this.selectedAddressId, login.code, address)
+        } else {
+          await createUserAddress(this.menuStore.merchantId, login.code, address)
+        }
+        this.addressFormVisible = false
+        await this.loadAddresses()
+        if (this.addressReturnPage) {
+          this.currentPage = this.addressReturnPage
+          this.addressReturnPage = ''
+        }
+        mpx.showToast({ title: '地址已保存', icon: 'success' })
+      } catch (error) {
+        const message = error && error.message
+        const title = message === 'invalid address fields'
+          ? '请检查手机号、所在地区和详细地址'
+          : '地址保存失败，请重试'
+        this.addressFormError = title
+      } finally {
+        this.addressSaving = false
+      }
+    },
+    async makeDefaultAddress(event) {
+      const address = this.userAddresses.find(item => item.id === Number(event.currentTarget.dataset.id))
+      if (!address) return
+      try {
+        const login = await mpx.login()
+        if (!login || !login.code) throw new Error('WeChat login code is missing')
+        await updateUserAddress(this.menuStore.merchantId, address.id, login.code, { ...address, isDefault: true })
+        await this.loadAddresses()
+      } catch (error) {
+        mpx.showToast({ title: '默认地址设置失败，请重试', icon: 'none' })
+      }
+    },
+    removeAddress(event) {
+      const addressId = Number(event.currentTarget.dataset.id)
+      mpx.showModal({
+        title: '删除地址',
+        content: '确认删除这条收货地址吗？',
+        success: result => {
+          if (result.confirm) this.deleteAddressById(addressId)
+        }
+      })
+    },
+    async deleteAddressById(addressId) {
+      try {
+        const login = await mpx.login()
+        if (!login || !login.code) throw new Error('WeChat login code is missing')
+        await deleteUserAddress(this.menuStore.merchantId, addressId, login.code)
+        await this.loadAddresses()
+        mpx.showToast({ title: '地址已删除', icon: 'success' })
+      } catch (error) {
+        mpx.showToast({ title: '地址删除失败，请重试', icon: 'none' })
+      }
+    },
+    openMyOrders() {
+      this.currentPage = 'orders'
+      this.loadMyOrders()
+    },
+    async fetchMyOrders(cursor) {
+      const login = await mpx.login()
+      if (!login || !login.code) throw new Error('WeChat login code is missing')
+      const result = await getMyPaymentOrders(this.menuStore.merchantId, login.code, cursor)
+      const productImages = new Map()
+      this.menuStore.series.forEach(series => {
+        series.products.forEach(product => productImages.set(product.id, product.image))
+      })
+      return {
+        orders: (result.orders || []).map(order => ({
+          ...order,
+          storeName: order.storeName || this.storeDisplayName,
+          fulfillmentTypeText: formatFulfillmentType(order.fulfillmentType),
+          statusText: formatOrderStatus(order.status),
+          totalAmountText: formatMoney(order.totalAmount),
+          createdAtText: formatPaidAt(order.paidAt || order.createdAt),
+          items: (order.items || []).map(item => ({
+            ...item,
+            image: productImages.get(item.productId) || item.image || '',
+            lineAmountText: formatMoney(item.lineAmount)
+          }))
+        })),
+        hasMore: Boolean(result.hasMore),
+        nextCursor: result.nextCursor || null
+      }
+    },
+    async loadMyOrders() {
+      if (this.ordersLoading || this.ordersLoadingMore) {
+        this.ordersRefreshing = false
+        return
+      }
+      this.ordersLoading = true
+      this.ordersError = false
+      this.ordersLoadMoreError = false
+      this.ordersHasMore = false
+      this.ordersCursor = null
+      this.userOrders = []
+      try {
+        const page = await this.fetchMyOrders(null)
+        this.userOrders = page.orders
+        this.ordersCursor = page.nextCursor
+        this.ordersHasMore = page.hasMore && Boolean(page.nextCursor)
+      } catch (error) {
+        this.ordersError = true
+      } finally {
+        this.ordersLoading = false
+        this.ordersRefreshing = false
+      }
+    },
+    async loadMoreMyOrders() {
+      if (this.ordersLoading || this.ordersLoadingMore || !this.ordersHasMore || !this.ordersCursor) return
+      this.ordersLoadingMore = true
+      this.ordersLoadMoreError = false
+      try {
+        const page = await this.fetchMyOrders(this.ordersCursor)
+        this.userOrders = this.userOrders.concat(page.orders)
+        this.ordersCursor = page.nextCursor
+        this.ordersHasMore = page.hasMore && Boolean(page.nextCursor)
+      } catch (error) {
+        this.ordersLoadMoreError = true
+      } finally {
+        this.ordersLoadingMore = false
+      }
+    },
+    refreshMyOrders() {
+      this.ordersRefreshing = true
+      this.loadMyOrders()
+    },
+    openCart() {
+      this.currentPage = 'cart'
+    },
+    closeCart() {
+      this.currentPage = 'menu'
+    },
+    returnToMenu() {
+      this.currentPage = 'menu'
+    },
+    changePage(event) {
+      this.currentPage = event.currentTarget.dataset.page
+    },
+    selectSeries(event) {
+      this.menuStore.selectSeries(event.currentTarget.dataset.id)
+    },
+    openProduct(event) {
+      this.menuStore.openProduct(event.currentTarget.dataset.id)
+    },
+    closeProduct() {
+      this.menuStore.closeProduct()
+    },
+    selectProductOption(event) {
+      this.menuStore.selectOption({
+        groupIndex: Number(event.currentTarget.dataset.groupIndex),
+        optionIndex: Number(event.currentTarget.dataset.optionIndex)
+      })
+    },
+    decreaseQuantity() {
+      this.menuStore.changeQuantity(-1)
+    },
+    increaseQuantity() {
+      this.menuStore.changeQuantity(1)
+    },
+    addToCart() {
+      this.menuStore.addToCart().then(() => {
+        mpx.showToast({ title: '已加入购物车', icon: 'success' })
+      }).catch(error => {
+        mpx.showToast({ title: error.message || '添加失败，请重试', icon: 'none' })
+      })
+    },
+    changeCartQuantity(event) {
+      const item = this.menuStore.cartItems.find(entry => entry.id === Number(event.currentTarget.dataset.id))
+      if (!item) return
+      const quantity = item.quantity + Number(event.currentTarget.dataset.delta)
+      if (quantity < 1) return
+      this.menuStore.setCartItemQuantity(item.id, quantity).catch(error => {
+        mpx.showToast({ title: error.message || '数量更新失败', icon: 'none' })
+      })
+    },
+    removeCartItem(event) {
+      this.menuStore.removeCartItem(Number(event.currentTarget.dataset.id)).catch(error => {
+        mpx.showToast({ title: error.message || '移除失败，请重试', icon: 'none' })
+      })
+    },
+    selectFulfillmentType(event) {
+      this.fulfillmentType = event.currentTarget.dataset.type
+    },
+    async payNow() {
+      if (this.paying) return
+      if (this.menuStore.activeStore && this.menuStore.activeStore.isTest) {
+        mpx.showToast({ title: '演示门店不能支付', icon: 'none' })
+        return
+      }
+      this.paying = true
+      try {
+        if (this.fulfillmentType === 'delivery') {
+          const addressLogin = await mpx.login()
+          if (!addressLogin || !addressLogin.code) throw new Error('微信登录失败，请重试')
+          const addressResult = await getUserAddresses(this.menuStore.merchantId, addressLogin.code)
+          this.userAddresses = addressResult.addresses || []
+          if (this.userAddresses.length === 0) {
+            mpx.showModal({
+              title: '需要收货地址',
+              content: '外送订单需要收货地址，请先添加地址再继续支付。',
+              confirmText: '去添加',
+              cancelText: '暂不',
+              success: result => {
+                if (!result.confirm) return
+                this.addressReturnPage = 'cart'
+                this.currentPage = 'addresses'
+              }
+            })
+            return
+          }
+        }
+        const login = await mpx.login()
+        if (!login || !login.code) throw new Error('微信登录失败，请重试')
+        const order = await createPaymentOrder(this.menuStore.merchantId, this.menuStore.cartId, login.code, this.menuStore.storeId, this.fulfillmentType)
+        await mpx.requestPayment(order.payment)
+
+        let status = 'pending'
+        let paidOrder = null
+        for (let attempt = 0; attempt < 8; attempt += 1) {
+          try {
+            const result = await getPaymentOrder(this.menuStore.merchantId, this.menuStore.cartId, order.orderNo, this.menuStore.storeId)
+            status = result.status
+            if (status === 'paid') paidOrder = result
+            if (status !== 'pending') break
+          } catch (error) {
+            break
+          }
+          await new Promise(resolve => setTimeout(resolve, 1000))
+        }
+
+        if (status === 'paid' && paidOrder) {
+          this.successOrder = {
+            ...paidOrder,
+            totalAmountText: formatMoney(paidOrder.totalAmount),
+            paidAtText: formatPaidAt(paidOrder.paidAt),
+            fulfillmentTypeText: formatFulfillmentType(paidOrder.fulfillmentType),
+            items: (paidOrder.items || []).map(item => ({
+              ...item,
+              lineAmountText: formatMoney(item.lineAmount)
+            }))
+          }
+          this.currentPage = 'payment-success'
+          try {
+            await this.menuStore.refreshCart()
+          } catch (error) {
+            mpx.showToast({ title: '支付成功，购物车刷新失败', icon: 'none' })
+          }
+        } else {
+          mpx.showToast({ title: '支付已提交，结果确认中', icon: 'none' })
+        }
+      } catch (error) {
+        const message = error && (error.message || error.errMsg) || ''
+        let title = message || '发起支付失败，请重试'
+        if (message.toLowerCase().includes('cancel')) {
+          title = '已取消支付'
+        } else if (message.toLowerCase().includes('not configured')) {
+          title = '商户暂未开通微信支付'
+        } else if (message === 'delivery requires a saved address') {
+          title = '外送订单需要先添加收货地址'
+          this.addressReturnPage = 'cart'
+          this.currentPage = 'addresses'
+          this.loadAddresses()
+        }
+        mpx.showToast({
+          title,
+          icon: 'none'
+        })
+      } finally {
+        this.paying = false
+      }
+    },
+    updateStoreDistance(location = null) {
+      const store = this.menuStore.activeStore
+      if (!store || !store.latitude || !store.longitude) {
+        this.storeDistance = '门店位置暂不可用'
+        return
+      }
+      if (!location) {
+        this.storeDistance = '点击定位查看附近门店'
+        return
+      }
+      const updateDistance = currentLocation => {
+        const distance = calculateDistanceKm(currentLocation.latitude, currentLocation.longitude, store.latitude, store.longitude)
+        this.storeDistance = `门店距离您约${distance.toFixed(1)}km`
+      }
+      updateDistance(location)
+    },
+    async updateSelectedStoreDistance() {
+      const store = this.menuStore.activeStore
+      if (!store || !store.latitude || !store.longitude) {
+        this.updateStoreDistance()
+        return
+      }
+      this.storeDistance = '正在获取门店距离…'
+      try {
+        const location = await mpx.getLocation({ type: 'gcj02' })
+        this.updateStoreDistance(location)
+      } catch (error) {
+        this.storeDistance = '开启定位后查看门店距离'
+      }
+    },
+    openStoreMap() {
+      const store = this.menuStore.activeStore
+      if (!store || !store.latitude || !store.longitude) {
+        mpx.showToast({ title: '门店位置暂不可用', icon: 'none' })
+        return
+      }
+      mpx.openLocation({
+        latitude: store.latitude,
+        longitude: store.longitude,
+        name: store.name,
+        address: store.address
+      }).catch(() => {
+        mpx.showToast({ title: '暂时无法打开地图', icon: 'none' })
+      })
+    }
+  }
+})
+</script>
+
+<style lang="stylus">
+  .app-shell
+    height 100vh
+    position relative
+    overflow hidden
+    background #fff
+  .home-screen
+    position absolute
+    inset 0
+    overflow hidden
+    background #56432e
+  .home-image
+    position absolute
+    inset 0
+    width 100%
+    height 100%
+  .home-atmosphere
+    position absolute
+    inset 0
+    background linear-gradient(180deg, rgba(28, 24, 18, .12) 0%, rgba(28, 24, 18, .06) 40%, rgba(21, 20, 17, .48) 70%, rgba(18, 19, 17, .8) 100%)
+  .home-brand
+    position absolute
+    top calc(var(--status-bar-height) + 75rpx)
+    left 42rpx
+    color #fff
+    font-family Georgia, 'Times New Roman', serif
+    text-shadow 0 2rpx 14rpx rgba(0, 0, 0, .72)
+  .brand-wordmark
+    font-size 56rpx
+    font-weight bold
+    letter-spacing 4rpx
+  .brand-anniversary
+    margin-top 25rpx
+    font-size 20rpx
+  .brand-anniversary text
+    font-size 36rpx
+  .brand-location
+    margin-top 14rpx
+    font-size 22rpx
+    line-height 1.6
+  .home-actions
+    position absolute
+    left 12%
+    right 12%
+    bottom 250rpx
+    color #fff
+    text-align center
+  .start-order, .member-entry
+    display flex
+    flex-direction column
+    align-items center
+    gap 5rpx
+  .action-title
+    font-family Arial, sans-serif
+    font-size 38rpx
+    font-weight bold
+    text-shadow 0 2rpx 10rpx rgba(0, 0, 0, .24)
+  .action-subtitle
+    font-family Arial, sans-serif
+    font-size 31rpx
+    font-weight bold
+    letter-spacing 1rpx
+    text-shadow 0 2rpx 10rpx rgba(0, 0, 0, .24)
+  .action-rule
+    height 1rpx
+    margin 22rpx 0 34rpx
+    background rgba(255, 255, 255, .78)
+  .destination-screen
+    position absolute
+    top var(--status-bar-height)
+    left 0
+    right 0
+    bottom 132rpx
+    display flex
+    align-items center
+    justify-content center
+    background #f8f7f4
+    color #312e29
+  .order-page .menu-cart-entry
+    position absolute
+    right 32rpx
+    bottom calc(132rpx + 32rpx + env(safe-area-inset-bottom))
+    z-index 3
+    width 108rpx
+    height 108rpx
+    padding 0
+    display flex
+    flex-direction column
+    justify-content center
+    gap 4rpx
+    border 0
+    border-radius 50%
+    background #34312e
+    box-shadow 0 8rpx 22rpx rgba(52, 49, 46, .24)
+    color #fff
+    font-size 18rpx
+  .menu-cart-entry .cart-entry-icon
+    width 34rpx
+    height 34rpx
+    filter brightness(0) invert(1)
+  .menu-cart-entry .cart-entry-badge
+    top -4rpx
+    right -4rpx
+  .store-picker-sheet
+    width 100%
+    max-height 72vh
+    display flex
+    flex-direction column
+    overflow hidden
+    background #f6f7f4
+    padding-bottom env(safe-area-inset-bottom)
+  .store-picker-header
+    height 100rpx
+    flex none
+    padding 0 32rpx
+    display flex
+    align-items center
+    justify-content space-between
+    border-bottom 1rpx solid #e8ebe7
+    background #fff
+    color #343a35
+    font-size 28rpx
+    font-weight bold
+  .store-picker-close
+    width 56rpx
+    height 56rpx
+    display flex
+    align-items center
+    justify-content center
+    color #777f77
+    font-size 42rpx
+    font-weight normal
+  .store-picker-list
+    width 100%
+    max-height 60vh
+  .store-option
+    min-height 112rpx
+    padding 18rpx 30rpx
+    display flex
+    align-items center
+    justify-content space-between
+    gap 20rpx
+    border-bottom 1rpx solid #eceeeb
+    background #fff
+  .store-option-copy
+    min-width 0
+    display flex
+    flex-direction column
+    gap 8rpx
+  .store-option-name
+    color #343a35
+    font-size 25rpx
+    font-weight bold
+  .store-option-address
+    color #888f88
+    font-size 20rpx
+    line-height 1.4
+  .store-option-selected
+    flex none
+    color #52745c
+    font-size 21rpx
+  .store-option-status
+    flex none
+    display flex
+    align-items center
+    gap 10rpx
+  .store-option-test
+    flex none
+    color #aa7440
+    font-size 20rpx
+  .store-test-label
+    margin-left 8rpx
+    color #a16b35
+    font-size 19rpx
+    font-weight normal
+  .destination-title
+    font-family Arial, sans-serif
+    font-size 38rpx
+    font-weight bold
+  .destination-subtitle
+    margin-top 7rpx
+    color #8e8983
+    font-family Arial, sans-serif
+    font-size 24rpx
+  .profile-screen
+    top 0
+    bottom calc(132rpx + env(safe-area-inset-bottom))
+    display block
+    background #f1f3f0
+  .profile-scroll
+    width 100%
+    height 100%
+  .profile-hero
+    height 430rpx
+    position relative
+    overflow hidden
+    background #53624e
+  .profile-hero-image
+    width 100%
+    height 100%
+  .profile-hero-shade
+    position absolute
+    inset 0
+    background linear-gradient(180deg, rgba(23, 31, 24, .08), rgba(23, 31, 24, .36))
+  .profile-brand
+    position absolute
+    top calc(var(--status-bar-height) + 72rpx)
+    left 34rpx
+    max-width calc(100% - 68rpx)
+    color #fff
+    font-family Georgia, 'Times New Roman', serif
+    font-size 39rpx
+    font-weight bold
+    text-shadow 0 2rpx 10rpx rgba(0, 0, 0, .45)
+  .profile-content
+    position relative
+    padding 0 24rpx 34rpx
+  .profile-summary
+    margin-top -82rpx
+    padding 28rpx 26rpx 24rpx
+    border-radius 10rpx
+    background #fff
+    box-shadow 0 6rpx 18rpx rgba(36, 46, 37, .08)
+  .profile-user-row
+    min-height 112rpx
+    display flex
+    align-items center
+    gap 20rpx
+  .profile-avatar
+    width 94rpx
+    height 94rpx
+    flex none
+    display flex
+    align-items center
+    justify-content center
+    border-radius 50%
+    background #edf1eb
+  .profile-avatar image
+    width 48rpx
+    height 48rpx
+    opacity .75
+  .profile-user-copy
+    flex 1
+    min-width 0
+  .profile-user-name
+    overflow hidden
+    color #343a35
+    font-size 30rpx
+    font-weight bold
+    white-space nowrap
+    text-overflow ellipsis
+  .profile-user-caption
+    margin-top 9rpx
+    overflow hidden
+    color #8b918b
+    font-size 21rpx
+    white-space nowrap
+    text-overflow ellipsis
+  .profile-user-arrow, .profile-entry-arrow
+    width 30rpx
+    height 30rpx
+    flex none
+    opacity .55
+  .profile-stats
+    margin-top 24rpx
+    padding-top 23rpx
+    display grid
+    grid-template-columns repeat(3, 1fr)
+    border-top 1rpx solid #eef0ed
+  .profile-stat
+    min-width 0
+    display flex
+    flex-direction column
+    align-items center
+    gap 9rpx
+    color #515850
+  .profile-stat + .profile-stat
+    border-left 1rpx solid #eef0ed
+  .profile-stat image
+    width 34rpx
+    height 34rpx
+    opacity .75
+  .profile-stat-value
+    color #343a35
+    font-family Georgia, 'Times New Roman', serif
+    font-size 31rpx
+    line-height 1.2
+  .profile-stat-label
+    color #777f77
+    font-size 21rpx
+  .profile-orders-entry
+    min-height 116rpx
+    margin-top 18rpx
+    padding 0 24rpx
+    display flex
+    align-items center
+    gap 18rpx
+    border-radius 8rpx
+    background #fff
+  .profile-orders-icon
+    width 58rpx
+    height 58rpx
+    flex none
+    display flex
+    align-items center
+    justify-content center
+    border-radius 8rpx
+    background #edf2ec
+  .profile-orders-icon image
+    width 34rpx
+    height 34rpx
+  .profile-orders-copy
+    flex 1
+    display flex
+    flex-direction column
+    gap 7rpx
+  .profile-orders-title
+    color #353c36
+    font-size 26rpx
+    font-weight bold
+  .profile-orders-caption
+    color #8a918a
+    font-size 20rpx
+  .profile-tools
+    margin-top 18rpx
+    padding 18rpx 10rpx 12rpx
+    display grid
+    grid-template-columns repeat(4, 1fr)
+    row-gap 10rpx
+    border-radius 8rpx
+    background #fff
+  .profile-tool
+    min-width 0
+    min-height 126rpx
+    display flex
+    flex-direction column
+    align-items center
+    justify-content center
+    gap 15rpx
+    color #555d56
+    font-size 21rpx
+  .profile-tool image
+    width 42rpx
+    height 42rpx
+    opacity .82
+  .addresses-screen
+    bottom calc(132rpx + env(safe-area-inset-bottom))
+    flex-direction column
+    align-items stretch
+    justify-content flex-start
+    background #f3f5f2
+    font-family Arial, sans-serif
+  .addresses-header
+    height 104rpx
+    flex none
+    padding 0 24rpx
+    display flex
+    align-items center
+    gap 18rpx
+    border-bottom 1rpx solid #e8ebe7
+    background #fff
+  .addresses-back
+    width 58rpx
+    height 58rpx
+    flex none
+    display flex
+    align-items center
+    justify-content center
+    color #445348
+    font-size 42rpx
+  .addresses-heading
+    flex 1
+    display flex
+    flex-direction column
+    gap 5rpx
+  .addresses-title
+    color #343a35
+    font-size 27rpx
+    font-weight bold
+  .addresses-subtitle
+    color #929992
+    font-size 19rpx
+  .addresses-body
+    position relative
+    flex 1
+    min-height 0
+  .address-state
+    position absolute
+    inset 0
+    display flex
+    flex-direction column
+    align-items center
+    justify-content center
+    gap 22rpx
+    color #838b84
+    font-size 23rpx
+  .address-retry
+    padding 15rpx 30rpx
+    border-radius 8rpx
+    background #315b43
+    color #fff
+    font-size 21rpx
+  .address-state-actions
+    display flex
+    align-items center
+    justify-content center
+    gap 14rpx
+  .address-add-first
+    min-width 210rpx
+    min-height 76rpx
+    display flex
+    align-items center
+    justify-content center
+    box-sizing border-box
+    font-size 23rpx
+  .addresses-list
+    width 100%
+    height 100%
+    padding 22rpx 24rpx
+    box-sizing border-box
+  .addresses-add-footer
+    flex none
+    padding 16rpx 24rpx 20rpx
+    border-top 1rpx solid #e8ebe7
+    background #fff
+  .addresses-add-button
+    height 82rpx
+    display flex
+    align-items center
+    justify-content center
+    border-radius 8rpx
+    background #315b43
+    color #fff
+    font-size 23rpx
+    font-weight bold
+  .address-card
+    margin-bottom 16rpx
+    padding 22rpx 24rpx 0
+    border 1rpx solid #e8ece8
+    border-radius 8rpx
+    background #fff
+  .address-card-main
+    padding-bottom 20rpx
+  .address-recipient-row
+    display flex
+    align-items center
+    gap 16rpx
+  .address-recipient
+    color #343a35
+    font-size 25rpx
+    font-weight bold
+  .address-phone
+    color #626a63
+    font-size 22rpx
+  .address-default-label
+    padding 4rpx 10rpx
+    border-radius 4rpx
+    background #edf4ee
+    color #52745c
+    font-size 18rpx
+  .address-location
+    margin-top 13rpx
+    color #717971
+    font-size 22rpx
+    line-height 1.5
+  .address-card-actions
+    min-height 72rpx
+    display flex
+    align-items center
+    justify-content flex-end
+    gap 30rpx
+    border-top 1rpx solid #eff1ee
+  .address-action
+    color #687169
+    font-size 20rpx
+  .address-action-delete
+    color #a16055
+  .address-form-sheet
+    width 100%
+    max-height 88vh
+    display flex
+    flex-direction column
+    overflow hidden
+    background #fff
+    padding-bottom env(safe-area-inset-bottom)
+  .address-form-header
+    height 98rpx
+    flex none
+    padding 0 30rpx
+    display flex
+    align-items center
+    justify-content space-between
+    border-bottom 1rpx solid #ecefec
+    color #343a35
+    font-size 27rpx
+    font-weight bold
+  .address-form-close
+    width 56rpx
+    height 56rpx
+    display flex
+    align-items center
+    justify-content center
+    color #7d857d
+    font-size 40rpx
+    font-weight normal
+  .address-form-scroll
+    width 100%
+    max-height 68vh
+    padding 8rpx 30rpx
+    box-sizing border-box
+  .address-form-error
+    margin 16rpx 0
+    padding 16rpx 18rpx
+    border 1rpx solid #efcfcb
+    border-radius 6rpx
+    background #fff6f4
+    color #a44f46
+    font-size 21rpx
+    line-height 1.45
+  .address-field
+    min-height 98rpx
+    display flex
+    align-items center
+    justify-content space-between
+    gap 20rpx
+    border-bottom 1rpx solid #eff1ee
+  .address-field-label
+    flex none
+    color #4c554d
+    font-size 22rpx
+  .address-input, .address-region
+    flex 1
+    min-width 0
+    color #343a35
+    font-size 22rpx
+    text-align right
+  .address-placeholder
+    color #a0a6a0
+  .address-field-detail
+    min-height 150rpx
+    align-items flex-start
+    padding-top 24rpx
+    box-sizing border-box
+  .address-textarea
+    flex 1
+    min-height 110rpx
+    color #343a35
+    font-size 22rpx
+    text-align right
+  .address-default-row
+    min-height 100rpx
+    display flex
+    align-items center
+    justify-content space-between
+    color #4c554d
+    font-size 22rpx
+  .address-form-footer
+    flex none
+    padding 16rpx 30rpx 24rpx
+    border-top 1rpx solid #eff1ee
+  .address-save-button
+    height 82rpx
+    display flex
+    align-items center
+    justify-content center
+    border-radius 8rpx
+    background #315b43
+    color #fff
+    font-size 24rpx
+    font-weight bold
+  .address-save-disabled
+    opacity .58
+  .orders-screen
+    bottom calc(132rpx + env(safe-area-inset-bottom))
+    flex-direction column
+    align-items stretch
+    justify-content flex-start
+    background #f4f6f3
+    font-family Arial, sans-serif
+  .orders-body
+    flex 1
+    width 100%
+    min-height 0
+    position relative
+  .orders-state
+    position absolute
+    inset 0
+    display flex
+    flex-direction column
+    align-items center
+    justify-content center
+    gap 24rpx
+    color #858c86
+    font-size 24rpx
+  .orders-loading-spinner
+    width 28rpx
+    height 28rpx
+    box-sizing border-box
+    border 3rpx solid #dfe6df
+    border-top-color #52745c
+    border-radius 50%
+  .orders-retry
+    padding 16rpx 34rpx
+    border-radius 8rpx
+    background #315b43
+    color #fff
+    font-size 22rpx
+  .orders-list
+    width 100%
+    height 100%
+    padding 22rpx 24rpx
+    box-sizing border-box
+  .orders-pagination
+    min-height 88rpx
+    padding 8rpx 0 18rpx
+    display flex
+    align-items center
+    justify-content center
+    box-sizing border-box
+    color #929a92
+    font-size 21rpx
+    line-height 1.4
+    text-align center
+  .orders-pagination-loading
+    display flex
+    align-items center
+    gap 12rpx
+  .orders-pagination-retry
+    color #42694f
+  .orders-pagination-end
+    color #a1a8a1
+  .orders-store-row
+    min-height 48rpx
+    display flex
+    align-items center
+    gap 9rpx
+    border-bottom 1rpx solid #f0f1ef
+    color #555e56
+    font-size 22rpx
+    font-weight bold
+  .orders-store-row image
+    width 27rpx
+    height 27rpx
+  .orders-fulfillment-label
+    margin-left auto
+    padding 5rpx 12rpx
+    border-radius 6rpx
+    background #edf2ec
+    color #52745c
+    font-size 19rpx
+  .orders-card
+    margin-bottom 18rpx
+    padding 22rpx 24rpx
+    border 1rpx solid #ecefec
+    border-radius 8rpx
+    background #fff
+  .orders-card-header
+    min-height 46rpx
+    display flex
+    align-items center
+    justify-content space-between
+    gap 16rpx
+  .orders-created-at
+    color #8a918b
+    font-size 20rpx
+  .orders-status
+    flex none
+    font-size 22rpx
+    font-weight bold
+  .orders-status-paid
+    color #33865b
+  .orders-status-other
+    color #a16b35
+  .orders-product
+    min-height 112rpx
+    padding 12rpx 0
+    display flex
+    align-items center
+    justify-content space-between
+    gap 20rpx
+    border-bottom 1rpx solid #f0f1ef
+  .orders-product-image
+    width 86rpx
+    height 86rpx
+    flex none
+    border-radius 8rpx
+    background #f1f2ef
+  .orders-product-name
+    flex 1
+    min-width 0
+    color #373d38
+    font-size 22rpx
+    line-height 1.4
+  .orders-product-total
+    flex none
+    color #373d38
+    font-family Arial, sans-serif
+    font-size 21rpx
+  .orders-card-footer
+    padding-top 18rpx
+    display flex
+    align-items flex-end
+    justify-content space-between
+    gap 18rpx
+  .orders-order-no
+    flex 1
+    min-width 0
+    color #929892
+    font-family Arial, sans-serif
+    font-size 17rpx
+    word-break break-all
+  .orders-total
+    flex none
+    color #343a35
+    font-size 23rpx
+    font-weight bold
+  .order-page
+    position relative
+    --ink #34312e
+    --muted #8f8b88
+    --line #ece8e3
+    background #fff
+    color var(--ink)
+    font-family Georgia, 'Times New Roman', serif
+    height 100vh
+    padding-top var(--status-bar-height)
+    box-sizing border-box
+    overflow hidden
+  .store-panel
+    padding 22rpx 42rpx 17rpx
+    border-bottom 1rpx solid var(--line)
+  .store-name
+    font-family Arial, sans-serif
+    font-weight bold
+    font-size 29rpx
+    display flex
+    align-items center
+  .store-icon
+    width 36rpx
+    height 36rpx
+    vertical-align middle
+    margin-right 8rpx
+  .store-arrow
+    width 32rpx
+    height 32rpx
+    vertical-align middle
+    margin-left 8rpx
+  .store-distance
+    color #8b8988
+    font-family Arial, sans-serif
+    font-size 25rpx
+    margin-top 16rpx
+  .store-heading
+    display flex
+    align-items center
+    justify-content flex-start
+    gap 16rpx
+  .store-actions
+    margin-left auto
+    display flex
+    align-items center
+    gap 12rpx
+    flex none
+  .cart-entry
+    position relative
+    height 54rpx
+    padding 0 16rpx
+    display flex
+    align-items center
+    gap 8rpx
+    box-sizing border-box
+    border 1rpx solid #e9e5e1
+    border-radius 28rpx
+    color #605a55
+    font-family Arial, sans-serif
+    font-size 21rpx
+  .cart-entry-icon
+    width 28rpx
+    height 28rpx
+  .cart-entry-badge
+    position absolute
+    top -12rpx
+    right -8rpx
+    min-width 26rpx
+    height 26rpx
+    padding 0 5rpx
+    display flex
+    align-items center
+    justify-content center
+    box-sizing border-box
+    border-radius 15rpx
+    background #bd4947
+    color #fff
+    font-family Arial, sans-serif
+    font-size 17rpx
+  .map-button
+    height 54rpx
+    padding 0 18rpx
+    display flex
+    align-items center
+    gap 7rpx
+    flex none
+    border 1rpx solid #e9e5e1
+    border-radius 28rpx
+    color #605a55
+    font-family Arial, sans-serif
+    font-size 22rpx
+  .map-button-icon
+    width 27rpx
+    height 27rpx
+  .order-content
+    height calc(100vh - 255rpx - var(--status-bar-height) - env(safe-area-inset-bottom))
+    display flex
+  .category-list
+    width 138rpx
+    flex none
+    background #f8f8f7
+  .category
+    height 114rpx
+    position relative
+    display flex
+    flex-direction column
+    align-items center
+    justify-content center
+    gap 6rpx
+    color #8e8b89
+    font-family Arial, sans-serif
+    font-size 20rpx
+    box-sizing border-box
+  .category-active
+    color #312923
+    font-weight bold
+    background #fff
+    &:before
+      content ''
+      position absolute
+      left 0
+      top 0
+      bottom 0
+      width 7rpx
+      background #b93b3a
+  .category-icon
+    width 37rpx
+    height 37rpx
+  .category-badge
+    position absolute
+    top 17rpx
+    right 9rpx
+    background #d6081b
+    color #fff
+    border-radius 15rpx
+    padding 2rpx 7rpx
+    font-size 17rpx
+    font-weight bold
+  .menu-list
+    width 0
+    flex 1
+    background #fff
+  .campaign
+    height 395rpx
+    overflow hidden
+    background #cd888a
+  .campaign-slide
+    height 100%
+    position relative
+  .campaign-image
+    width 100%
+    height 100%
+  .campaign-shade
+    position absolute
+    inset 0
+    background rgba(104, 27, 33, .25)
+  .campaign-copy
+    position absolute
+    left 25rpx
+    top 66rpx
+    color #fff
+    display flex
+    flex-direction column
+  .campaign-kicker
+    font-family Arial, sans-serif
+    letter-spacing 2rpx
+    font-size 17rpx
+  .campaign-title
+    font-size 51rpx
+    letter-spacing 3rpx
+    margin 5rpx 0 15rpx
+  .campaign-price
+    font-family Arial, sans-serif
+    font-size 24rpx
+  .section-title
+    padding 28rpx 20rpx 15rpx
+    color #888482
+    font-size 28rpx
+  .product
+    min-height 145rpx
+    margin 0 20rpx
+    display flex
+    align-items center
+    border-bottom 1rpx solid #f3f1ef
+  .product-image
+    width 105rpx
+    height 105rpx
+    border-radius 52rpx
+    flex none
+    background #f5ece8
+  .product-info
+    min-width 0
+    padding-left 18rpx
+  .product-name
+    font-family Arial, sans-serif
+    font-size 29rpx
+    font-weight bold
+  .product-description
+    margin-top 7rpx
+    color #999592
+    font-family Arial, sans-serif
+    font-size 21rpx
+    line-height 31rpx
+    overflow hidden
+    text-overflow ellipsis
+    display -webkit-box
+    -webkit-line-clamp 2
+    -webkit-box-orient vertical
+  .product-price
+    margin-top 7rpx
+    font-size 29rpx
+    font-weight bold
+  .menu-padding
+    height 130rpx
+  .bottom-nav
+    position fixed
+    left 0
+    right 0
+    bottom 0
+    height 132rpx
+    padding-bottom env(safe-area-inset-bottom)
+    display flex
+    background rgba(255, 255, 255, .97)
+    border-top 1rpx solid var(--line)
+    z-index 4
+  .nav-item
+    flex 1
+    display flex
+    flex-direction column
+    align-items center
+    justify-content center
+    gap 4rpx
+    color #aaa6a3
+    font-family Arial, sans-serif
+    font-size 20rpx
+  .bottom-nav-home
+    background rgba(28, 28, 25, .38)
+    border-top 1rpx solid rgba(255, 255, 255, .28)
+    backdrop-filter blur(10px)
+  .bottom-nav-home .nav-item
+    color rgba(255, 255, 255, .78)
+  .bottom-nav-home .nav-active
+    color #fff
+  .nav-english
+    font-size 18rpx
+    opacity .82
+  .nav-active
+    color #3d3935
+    font-weight bold
+  .nav-icon
+    width 34rpx
+    height 34rpx
+    box-sizing border-box
+  .modal-sheet
+    width 100%
+    height 82vh
+    max-height 82vh
+    display flex
+    flex-direction column
+    overflow hidden
+    background #fff
+  .modal-hero
+    height 25vh
+    flex none
+    position relative
+    display flex
+    justify-content center
+    align-items center
+    background #f5f4f2
+  .modal-product-image
+    width 76%
+    height 100%
+  .modal-close
+    position absolute
+    top 20rpx
+    right 24rpx
+    width 54rpx
+    height 54rpx
+    line-height 49rpx
+    border-radius 50%
+    text-align center
+    color #fff
+    background rgba(50, 50, 50, .58)
+    font-family Arial, sans-serif
+    font-size 43rpx
+  .modal-content
+    flex 1
+    min-height 0
+    padding 26rpx 40rpx 24rpx
+    box-sizing border-box
+  .modal-product-heading
+    display flex
+    align-items center
+    justify-content space-between
+  .modal-product-name
+    font-family Arial, sans-serif
+    font-size 34rpx
+    font-weight bold
+  .favorite-icon
+    width 40rpx
+    height 40rpx
+  .modal-description
+    margin-top 17rpx
+    color #888481
+    font-family Arial, sans-serif
+    font-size 23rpx
+    line-height 36rpx
+  .option-group
+    margin-top 27rpx
+  .option-title
+    margin-bottom 18rpx
+    font-family Arial, sans-serif
+    font-size 25rpx
+  .option-list
+    display flex
+    flex-wrap wrap
+    gap 14rpx
+  .option-chip
+    min-height 60rpx
+    padding 0 24rpx
+    display flex
+    align-items center
+    justify-content center
+    box-sizing border-box
+    border 1rpx solid transparent
+    border-radius 12rpx
+    background #f5f5f5
+    color #8d8a88
+    font-family Arial, sans-serif
+    font-size 22rpx
+  .option-selected
+    border-color #d94c4a
+    background #fff7f6
+    color #c94442
+  .modal-footer
+    flex none
+    padding 14rpx 32rpx calc(26rpx + env(safe-area-inset-bottom))
+    background #fff
+    border-top 1rpx solid #f0eeec
+  .quantity-row
+    min-height 58rpx
+    display flex
+    align-items center
+    justify-content space-between
+    gap 18rpx
+  .selected-summary
+    flex 1
+    color #96918e
+    font-family Arial, sans-serif
+    font-size 19rpx
+    overflow hidden
+    white-space nowrap
+    text-overflow ellipsis
+  .quantity-control
+    display flex
+    align-items center
+    gap 20rpx
+  .quantity-button
+    width 43rpx
+    height 43rpx
+    line-height 40rpx
+    text-align center
+    border-radius 50%
+    font-family Arial, sans-serif
+    font-size 34rpx
+  .quantity-minus
+    color #b5b1ae
+    border 1rpx solid #e6e3e1
+  .quantity-plus
+    color #fff
+    background #d99796
+  .quantity-value
+    min-width 18rpx
+    text-align center
+    font-size 23rpx
+  .add-cart-button
+    height 88rpx
+    margin-top 16rpx
+    display flex
+    align-items center
+    justify-content center
+    border-radius 50rpx
+    background #c93632
+    color #fff
+    font-family Arial, sans-serif
+    font-size 29rpx
+    font-weight bold
+  .cart-page
+    position absolute
+    inset 0
+    z-index 8
+    display flex
+    flex-direction column
+    padding-top var(--status-bar-height)
+    box-sizing border-box
+    background #fff
+    color #34312e
+  .cart-header
+    height 112rpx
+    flex none
+    display flex
+    align-items center
+    padding 0 30rpx
+    box-sizing border-box
+    border-bottom 1rpx solid #ece8e3
+    background #fff
+  .cart-back
+    width 66rpx
+    height 66rpx
+    display flex
+    align-items center
+    justify-content flex-start
+    color #34312e
+    font-family Arial, sans-serif
+    font-size 58rpx
+  .cart-heading
+    display flex
+    flex-direction column
+    gap 4rpx
+  .cart-title
+    font-family Arial, sans-serif
+    font-size 32rpx
+    font-weight bold
+  .cart-count-label
+    color #8f8b88
+    font-family Arial, sans-serif
+    font-size 20rpx
+  .cart-scroll
+    flex 1
+    min-height 0
+    padding 0 30rpx
+    box-sizing border-box
+    background #f7f6f4
+  .cart-empty
+    min-height 65vh
+    display flex
+    flex-direction column
+    align-items center
+    justify-content center
+    color #8f8b88
+    font-family Arial, sans-serif
+  .cart-empty-icon
+    width 92rpx
+    height 92rpx
+    opacity .45
+  .cart-empty-title
+    margin-top 24rpx
+    font-size 25rpx
+  .cart-empty-action
+    margin-top 30rpx
+    padding 16rpx 34rpx
+    border 1rpx solid #d8d3cd
+    border-radius 8rpx
+    color #514a43
+    font-size 22rpx
+  .cart-item
+    display flex
+    gap 22rpx
+    padding 25rpx 0
+    border-bottom 1rpx solid #e9e5e1
+  .cart-product-image
+    width 148rpx
+    height 148rpx
+    flex none
+    border-radius 8rpx
+    background #f0ebe6
+  .cart-item-main
+    min-width 0
+    min-height 148rpx
+    flex 1
+    display flex
+    flex-direction column
+    justify-content space-between
+  .cart-item-top
+    display flex
+    align-items flex-start
+    justify-content space-between
+    gap 12rpx
+  .cart-item-name
+    min-width 0
+    color #393531
+    font-family Arial, sans-serif
+    font-size 26rpx
+    font-weight bold
+    line-height 1.35
+  .cart-remove
+    flex none
+    min-width 64rpx
+    height 46rpx
+    padding 0 10rpx
+    display flex
+    align-items center
+    justify-content center
+    box-sizing border-box
+    border 1rpx solid #edcbc5
+    border-radius 6rpx
+    background #fff4f1
+    color #a34338
+    font-family Arial, sans-serif
+    font-size 21rpx
+    font-weight bold
+  .cart-item-options
+    margin-top 8rpx
+    color #8f8983
+    font-family Arial, sans-serif
+    font-size 19rpx
+    line-height 1.5
+  .cart-item-bottom
+    display flex
+    align-items center
+    justify-content space-between
+    gap 12rpx
+    margin-top 14rpx
+  .cart-item-price
+    color #393531
+    font-family Arial, sans-serif
+    font-size 25rpx
+    font-weight bold
+  .cart-quantity-control
+    display flex
+    align-items center
+    gap 12rpx
+  .cart-quantity-button
+    width 50rpx
+    height 50rpx
+    display flex
+    align-items center
+    justify-content center
+    box-sizing border-box
+    border 1rpx solid #809180
+    border-radius 50%
+    background #fff
+    color #315b43
+    font-family Arial, sans-serif
+    font-size 30rpx
+    font-weight bold
+  .cart-quantity-plus
+    border-color #315b43
+    background #315b43
+    color #fff
+  .cart-quantity-value
+    min-width 32rpx
+    color #34312e
+    text-align center
+    font-family Arial, sans-serif
+    font-size 24rpx
+    font-weight bold
+  .cart-footer
+    flex none
+    min-height 190rpx
+    padding 18rpx 30rpx calc(18rpx + env(safe-area-inset-bottom))
+    display flex
+    flex-direction column
+    align-items stretch
+    justify-content center
+    gap 16rpx
+    box-sizing border-box
+    border-top 1rpx solid #ece8e3
+    background #fff
+  .cart-fulfillment-row
+    min-height 62rpx
+    display flex
+    align-items center
+    justify-content space-between
+    gap 18rpx
+  .cart-fulfillment-label
+    flex none
+    color #6f776f
+    font-family Arial, sans-serif
+    font-size 21rpx
+  .cart-fulfillment-segment
+    flex 1
+    max-width 410rpx
+    padding 5rpx
+    display flex
+    gap 4rpx
+    box-sizing border-box
+    border-radius 8rpx
+    background #f0f2ee
+  .cart-fulfillment-option
+    flex 1
+    height 54rpx
+    display flex
+    align-items center
+    justify-content center
+    border-radius 6rpx
+    color #687068
+    font-family Arial, sans-serif
+    font-size 21rpx
+  .cart-fulfillment-selected
+    background #315b43
+    color #fff
+    font-weight bold
+  .cart-footer-main
+    width 100%
+    display flex
+    align-items center
+    justify-content space-between
+    gap 24rpx
+  .cart-total
+    display flex
+    flex-direction column
+    gap 4rpx
+  .cart-total-label
+    color #8f8b88
+    font-family Arial, sans-serif
+    font-size 20rpx
+  .cart-total-value
+    color #302d2a
+    font-family Arial, sans-serif
+    font-size 34rpx
+    font-weight bold
+  .cart-footer-actions
+    flex none
+    display flex
+    align-items center
+    gap 12rpx
+  .cart-continue, .cart-pay
+    min-width 142rpx
+    height 78rpx
+    margin 0
+    padding 0 16rpx
+    display flex
+    align-items center
+    justify-content center
+    box-sizing border-box
+    border-radius 8rpx
+    font-family Arial, sans-serif
+    font-size 22rpx
+    font-weight bold
+    line-height 1
+  .cart-continue
+    border 1rpx solid #315b43
+    background #fff
+    color #315b43
+  .cart-pay
+    border 0
+    background #315b43
+    color #fff
+  .cart-pay::after
+    border 0
+  .payment-success-page
+    position absolute
+    inset 0
+    z-index 30
+    display flex
+    flex-direction column
+    padding-top var(--status-bar-height)
+    box-sizing border-box
+    background #fff
+  .payment-success-header
+    flex none
+    padding 58rpx 32rpx 38rpx
+    display flex
+    flex-direction column
+    align-items center
+    background #eff7f1
+  .payment-success-check
+    width 78rpx
+    height 78rpx
+    display flex
+    align-items center
+    justify-content center
+    border-radius 50%
+    background #33865b
+    color #fff
+    font-size 48rpx
+    line-height 1
+  .payment-success-title
+    margin-top 20rpx
+    color #24382c
+    font-size 36rpx
+    font-weight bold
+  .payment-success-subtitle
+    margin-top 8rpx
+    color #718076
+    font-size 22rpx
+  .payment-success-content
+    flex 1
+    min-height 0
+    padding 36rpx 34rpx
+    box-sizing border-box
+    background #fff
+  .payment-success-amount
+    color #282e29
+    font-family Arial, sans-serif
+    font-size 52rpx
+    font-weight bold
+    text-align center
+  .payment-success-caption
+    margin-top 8rpx
+    color #888f89
+    font-size 21rpx
+    text-align center
+  .payment-success-meta
+    margin-top 36rpx
+    padding 20rpx 0
+    border-top 1rpx solid #ecefec
+    border-bottom 1rpx solid #ecefec
+  .payment-success-meta-row
+    min-height 58rpx
+    display flex
+    align-items center
+    justify-content space-between
+    gap 20rpx
+    color #777e78
+    font-size 22rpx
+  .payment-success-meta-row text:last-child
+    color #333a35
+    text-align right
+  .payment-success-order-no
+    max-width 70%
+    font-family Arial, sans-serif
+    font-size 20rpx
+    word-break break-all
+  .payment-success-items
+    padding-top 28rpx
+  .payment-success-section-title
+    margin-bottom 8rpx
+    color #343a35
+    font-size 25rpx
+    font-weight bold
+  .payment-success-item
+    min-height 78rpx
+    display flex
+    align-items center
+    gap 16rpx
+    border-bottom 1rpx solid #f0f1ef
+  .payment-success-item-main
+    flex 1
+    min-width 0
+  .payment-success-item-name
+    color #353b36
+    font-size 23rpx
+    line-height 1.4
+  .payment-success-item-options
+    margin-top 5rpx
+    color #929892
+    font-size 19rpx
+  .payment-success-item-quantity
+    flex none
+    color #838a84
+    font-family Arial, sans-serif
+    font-size 21rpx
+  .payment-success-item-total
+    min-width 104rpx
+    flex none
+    color #353b36
+    font-family Arial, sans-serif
+    font-size 22rpx
+    text-align right
+  .payment-success-footer
+    flex none
+    padding 18rpx 32rpx calc(18rpx + env(safe-area-inset-bottom))
+    border-top 1rpx solid #ecefec
+    background #fff
+  .payment-success-return
+    height 82rpx
+    display flex
+    align-items center
+    justify-content center
+    border-radius 8rpx
+    background #315b43
+    color #fff
+    font-size 24rpx
+    font-weight bold
+</style>
+
+<script type="application/json">
+  {
+    "navigationStyle": "custom",
+    "backgroundColor": "#ffffff",
+    "backgroundTextStyle": "dark"
+  }
+</script>
+

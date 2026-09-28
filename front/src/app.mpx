@@ -1,8 +1,10 @@
 <script>
 import mpx, { createApp } from '@mpxjs/core'
 import apiProxy from '@mpxjs/api-proxy'
+import { createPinia } from '@mpxjs/pinia'
 
 mpx.use(apiProxy, { usePromise: true })
+mpx.use(createPinia())
 
 createApp({
   onLaunch() {
@@ -19,6 +21,14 @@ createApp({
   {
     "pages": [
       "./pages/index"
+    ],
+    "permission": {
+      "scope.userLocation": {
+        "desc": "用于计算您到门店的距离并显示门店位置"
+      }
+    },
+    "requiredPrivateInfos": [
+      "getLocation"
     ]
   }
 </script>

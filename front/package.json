@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "serve": "mpx-cli-service serve",
-    "build": "mpx-cli-service build",
+    "build": "mpx-cli-service build --targets=wx",
     "lint": "eslint --ext .js,.ts,.mpx src/",
+    "build:wx": "mpx-cli-service build --targets=wx",
     "build:ali": "mpx-cli-service build --targets=ali",
     "build:web": "mpx-cli-service build --targets=web",
     "serve:ali": "mpx-cli-service serve --targets=ali",
