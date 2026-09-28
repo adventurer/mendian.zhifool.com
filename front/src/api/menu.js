@@ -7,6 +7,14 @@ const apiBaseUrl = process.env.VUE_APP_API_BASE_URL || 'https://mendian.zhifool.
 const cartStorageKey = 'mendian-cart-id'
 const storeStorageKey = 'mendian-store-id'
 
+export function getAssetUrl(imagePath) {
+  if (!imagePath) return ''
+  if (/^https?:\/\//i.test(imagePath)) return imagePath
+  const path = String(imagePath).replace(/^\/+/, '')
+  const assetPath = path.startsWith('assets/') ? path : `assets/${path}`
+  return `${apiBaseUrl.replace(/\/$/, '')}/${assetPath}`
+}
+
 export function getCartId(merchantId, storeId) {
   if (!merchantId || !storeId) throw new Error('merchantId and storeId are required')
   const scopedCartStorageKey = `${cartStorageKey}:${merchantId}:${storeId}`

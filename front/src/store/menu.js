@@ -1,31 +1,5 @@
 import { defineStore } from '@mpxjs/pinia'
-import { createCartItem, DEFAULT_MERCHANT_ID, DEFAULT_STORE_ID, getCartId, getCartItems, getMenu, getSelectedStoreId, getStores, removeCartItem, saveSelectedStoreId, updateCartItem } from '../api/menu'
-import roseLatteImage from '../assets/coffee/rose-latte.jpg'
-import butterLatteImage from '../assets/coffee/butter-latte.jpg'
-import osmanthusLatteImage from '../assets/coffee/osmanthus-latte.jpg'
-import sparklesIcon from '../assets/icons/sparkles.svg'
-import coffeeIcon from '../assets/icons/coffee.svg'
-import citrusIcon from '../assets/icons/citrus.svg'
-import cupSodaIcon from '../assets/icons/cup-soda.svg'
-import beanIcon from '../assets/icons/bean.svg'
-import milkIcon from '../assets/icons/milk.svg'
-import wheatIcon from '../assets/icons/wheat.svg'
-
-const seriesIconAssets = {
-  'icons/sparkles.svg': sparklesIcon,
-  'icons/coffee.svg': coffeeIcon,
-  'icons/citrus.svg': citrusIcon,
-  'icons/cup-soda.svg': cupSodaIcon,
-  'icons/bean.svg': beanIcon,
-  'icons/milk.svg': milkIcon,
-  'icons/wheat.svg': wheatIcon
-}
-
-const productImageAssets = {
-  'coffee/rose-latte.jpg': roseLatteImage,
-  'coffee/butter-latte.jpg': butterLatteImage,
-  'coffee/osmanthus-latte.jpg': osmanthusLatteImage
-}
+import { createCartItem, DEFAULT_MERCHANT_ID, DEFAULT_STORE_ID, getAssetUrl, getCartId, getCartItems, getMenu, getSelectedStoreId, getStores, removeCartItem, saveSelectedStoreId, updateCartItem } from '../api/menu'
 
 function distanceBetween(latitude, longitude, store) {
   const radians = degrees => degrees * Math.PI / 180
@@ -135,10 +109,10 @@ export const useMenuStore = defineStore('menu', {
       this.cartItems = cartItems
       this.series = menu.series.map(item => ({
         ...item,
-        icon: seriesIconAssets[item.icon] || item.icon,
+        icon: getAssetUrl(item.icon),
         products: item.products.map(product => ({
           ...product,
-          image: productImageAssets[product.image] || product.image
+          image: getAssetUrl(product.image)
         }))
       }))
       if (!this.series.some(item => item.id === this.activeSeriesId)) {
