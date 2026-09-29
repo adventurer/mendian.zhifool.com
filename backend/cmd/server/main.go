@@ -69,6 +69,7 @@ func main() {
 	if len(paymentGateways) == 0 && len(cfg.WeChatPay.MerchantConfigs()) > 0 {
 		log.Printf("WeChat Pay unavailable for all configured merchants")
 	}
+	api.RegisterFavoriteRoutes(app, db, paymentGateways)
 	api.RegisterPaymentRoutesForMerchants(app, db, paymentGateways)
 
 	address := net.JoinHostPort(cfg.Server.Host, strconv.Itoa(cfg.Server.Port))

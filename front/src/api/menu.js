@@ -106,6 +106,20 @@ export function getMyPaymentOrders(merchantId, code, cursor = null) {
   })
 }
 
+export function getUserFavorites(merchantId, storeId, code) {
+  return request(withStore(`/api/merchants/${encodeURIComponent(merchantId)}/favorites/list`, storeId), {
+    method: 'POST',
+    data: { code, storeId }
+  })
+}
+
+export function toggleUserFavorite(merchantId, storeId, productId, code) {
+  return request(withStore(`/api/merchants/${encodeURIComponent(merchantId)}/favorites/toggle`, storeId), {
+    method: 'POST',
+    data: { code, storeId, productId }
+  })
+}
+
 export function getUserAddresses(merchantId, code) {
   return request(`/api/merchants/${encodeURIComponent(merchantId)}/addresses/list`, {
     method: 'POST',

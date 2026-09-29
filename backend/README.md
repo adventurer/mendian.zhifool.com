@@ -59,6 +59,8 @@ The Mini Program can retrieve the current user's order statuses with `POST /api/
 
 The address book uses `POST /api/merchants/{merchantId}/addresses/list`, `POST /api/merchants/{merchantId}/addresses`, `PATCH /api/merchants/{merchantId}/addresses/{addressId}`, and `DELETE /api/merchants/{merchantId}/addresses/{addressId}`. Every request carries a fresh WeChat login `code` in its JSON body. Addresses are scoped by merchant, Mini Program AppID, and verified OpenID; ownership identifiers are never returned. The first saved address becomes the default, and deleting a default promotes the most recently updated remaining address.
 
+Product favorites use `POST /api/merchants/{merchantId}/favorites/list?storeId=<storeId>` and `POST /api/merchants/{merchantId}/favorites/toggle?storeId=<storeId>`. Requests include a fresh WeChat login `code` and the selected `storeId`; toggle requests also include `productId`. Favorites are scoped by merchant, store, Mini Program AppID, and verified OpenID. Startup creates the `user_favorites` table automatically.
+
 ## Stores
 
 Each merchant can have multiple physical stores in `merchant_stores`; `GET /api/merchants/{merchantId}/stores` returns active stores that have a catalog. Store catalogs are normalized in `store_menus`, `store_menu_series`, `store_products`, `store_product_options`, and `store_product_option_values`, keyed by merchant and store. Startup seeds the existing `default` store and its menu, plus a clearly marked `demo-store` with three zero-price sample products. The demo store has placeholder address/coordinates and is blocked from payment.

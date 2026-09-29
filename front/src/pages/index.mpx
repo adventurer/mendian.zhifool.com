@@ -37,20 +37,6 @@
               </view>
               <image class="profile-user-arrow" src="{{ chevronIcon }}" />
             </view>
-            <view class="profile-stats">
-              <view class="profile-stat">
-                <image src="{{ starIcon }}" />
-                <text class="profile-stat-label">积分商城</text>
-              </view>
-              <view class="profile-stat">
-                <image src="{{ receiptIcon }}" />
-                <text class="profile-stat-label">优惠券</text>
-              </view>
-              <view class="profile-stat">
-                <image src="{{ cartIcon }}" />
-                <text class="profile-stat-label">礼品</text>
-              </view>
-            </view>
           </view>
           <view class="profile-tools">
             <view class="profile-tool" bindtap="openMyOrders">
@@ -63,20 +49,8 @@
               <image src="{{ coffeeIcon }}" /><text>联系门店</text>
             </view>
 
-            <view class="profile-tool">
-              <image src="{{ starIcon }}" /><text>积分明细</text>
-            </view>
-            <view class="profile-tool">
-              <image src="{{ userIcon }}" /><text>会员码</text>
-            </view>
-            <view class="profile-tool">
-              <image src="{{ receiptIcon }}" /><text>发票助手</text>
-            </view>
-            <view class="profile-tool">
-              <image src="{{ sparklesIcon }}" /><text>消息中心</text>
-            </view>
-            <view class="profile-tool">
-              <image src="{{ chevronIcon }}" /><text>更多</text>
+            <view class="profile-tool" bindtap="openFavorites">
+              <image src="{{ starIcon }}" /><text>我的收藏</text>
             </view>
           </view>
         </view>
@@ -196,7 +170,9 @@
         <scroll-view class="modal-content" scroll-y>
           <view class="modal-product-heading">
             <view class="modal-product-name">{{ selectedProduct.name }}</view>
-            <image class="favorite-icon" src="{{ favoriteIcon }}" />
+            <view class="favorite-button {{isSelectedFavorite ? 'favorite-active' : ''}}" bindtap="toggleFavorite">
+              <text>{{ isSelectedFavorite ? '♥' : '♡' }}</text>
+            </view>
           </view>
           <view class="modal-description">{{ selectedProduct.description }}</view>
           <view wx:for="{{ selectedProduct.options }}" wx:for-item="group" wx:for-index="groupIndex" wx:key="id"
@@ -276,6 +252,40 @@
             <text wx:if="{{ !ordersLoadingMore && !ordersLoadMoreError && ordersHasMore }}">上拉加载更多</text>
             <text wx:if="{{ !ordersLoadingMore && !ordersLoadMoreError && !ordersHasMore }}"
               class="orders-pagination-end">没有更多订单</text>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+    <view wx:if="{{ currentPage === 'favorites' }}" class="destination-screen favorites-screen">
+      <view class="addresses-header">
+        <view class="addresses-back" bindtap="closeFavorites">‹</view>
+        <view class="addresses-heading">
+          <text class="addresses-title">我的收藏</text>
+          <text class="addresses-subtitle">收藏的门店商品</text>
+        </view>
+      </view>
+      <view class="favorites-body">
+        <view wx:if="{{ favoritesLoading && userFavorites.length === 0 }}" class="address-state">正在加载收藏</view>
+        <view wx:if="{{ !favoritesLoading && favoritesError && userFavorites.length === 0 }}" class="address-state">
+          <text>收藏加载失败</text>
+          <view class="address-retry" bindtap="loadFavorites">重新加载</view>
+        </view>
+        <view wx:if="{{ !favoritesLoading && !favoritesError && userFavorites.length === 0 }}" class="address-state">
+          <text>还没有收藏商品</text>
+          <view class="address-retry address-add-first" bindtap="startOrdering">去逛逛</view>
+        </view>
+        <scroll-view wx:if="{{ userFavorites.length > 0 }}" class="favorites-list" scroll-y>
+          <view wx:for="{{ userFavorites }}" wx:key="id" class="favorite-card">
+            <view class="favorite-card-main" bindtap="openFavoriteProduct" data-id="{{ item.id }}">
+              <image wx:if="{{ item.image }}" mode="aspectFill" src="{{ item.image }}" />
+              <view class="favorite-card-copy">
+                <text class="favorite-card-name">{{ item.name }}</text>
+                <text class="favorite-card-series">{{ item.seriesName }}</text>
+                <text class="favorite-card-description">{{ item.description }}</text>
+                <text class="favorite-card-price">¥ {{ item.price }}</text>
+              </view>
+            </view>
+            <view class="favorite-remove" bindtap="removeFavorite" data-id="{{ item.id }}">移除</view>
           </view>
         </scroll-view>
       </view>
@@ -430,7 +440,7 @@
     <view wx:if="{{ currentPage !== 'store' && currentPage !== 'cart' && currentPage !== 'payment-success' }}"
       class="bottom-nav">
       <view wx:for="{{ navigation }}" wx:key="page"
-        class="nav-item {{currentPage === item.page || ((currentPage === 'orders' || currentPage === 'addresses') && item.page === 'membership') ? 'nav-active' : ''}}"
+        class="nav-item {{currentPage === item.page || ((currentPage === 'orders' || currentPage === 'addresses' || currentPage === 'favorites') && item.page === 'membership') ? 'nav-active' : ''}}"
         bindtap="changePage" data-page="{{ item.page }}">
         <image class="nav-icon" src="{{ item.icon }}" />
         <text>{{ item.label }}</text>
@@ -444,7 +454,7 @@
 import mpx, { createPage } from '@mpxjs/core'
 import { mapState, mapStores } from '@mpxjs/pinia'
 import { useMenuStore } from '../store/menu'
-import { createPaymentOrder, createUserAddress, deleteUserAddress, getAssetUrl, getMyPaymentOrders, getPaymentOrder, getUserAddresses, loginWithWechat, updateUserAddress } from '../api/menu'
+import { createPaymentOrder, createUserAddress, deleteUserAddress, getAssetUrl, getMyPaymentOrders, getPaymentOrder, getUserAddresses, getUserFavorites, loginWithWechat, toggleUserFavorite, updateUserAddress } from '../api/menu'
 import mapPinIcon from '../assets/icons/map-pin.svg'
 import mapIcon from '../assets/icons/map.svg'
 import chevronIcon from '../assets/icons/chevron-right.svg'
@@ -454,7 +464,6 @@ import receiptIcon from '../assets/icons/receipt-text.svg'
 import userIcon from '../assets/icons/user-round.svg'
 import starIcon from '../assets/icons/star.svg'
 import coffeeIcon from '../assets/icons/coffee.svg'
-import sparklesIcon from '../assets/icons/sparkles.svg'
 
 const bannerImage = getAssetUrl('coffee/banner.jpg')
 const roseLatteImage = getAssetUrl('coffee/rose-latte.jpg')
@@ -515,6 +524,12 @@ createPage({
     ordersCursor: null,
     userOrders: [],
     userAddresses: [],
+    userFavorites: [],
+    favoriteProductIds: [],
+    favoritesStoreLoaded: '',
+    favoritesLoading: false,
+    favoritesError: false,
+    favoriteSaving: false,
     addressesLoading: false,
     addressesRefreshing: false,
     addressesError: false,
@@ -546,8 +561,6 @@ createPage({
     receiptIcon,
     starIcon,
     coffeeIcon,
-    sparklesIcon,
-    favoriteIcon: starIcon,
     campaignBanners: [
       { title: '秋日拿铁', subtitle: '香浓限定 ¥25', image: bannerImage },
       { title: '玫瑰米酿', subtitle: '季节新品 ¥20', image: roseLatteImage },
@@ -561,7 +574,10 @@ createPage({
   },
   computed: {
     ...mapStores(useMenuStore),
-    ...mapState(useMenuStore, ['brandName', 'series', 'activeSeries', 'activeSeriesId', 'selectedProduct', 'selectedPrice', 'selectedSummary', 'quantity', 'cartLines', 'cartCount', 'cartTotal', 'activeStore', 'stores', 'storeId'])
+    ...mapState(useMenuStore, ['brandName', 'series', 'activeSeries', 'activeSeriesId', 'selectedProduct', 'selectedPrice', 'selectedSummary', 'quantity', 'cartLines', 'cartCount', 'cartTotal', 'activeStore', 'stores', 'storeId']),
+    isSelectedFavorite() {
+      return Boolean(this.menuStore.selectedProduct && this.favoriteProductIds.indexOf(this.menuStore.selectedProduct.id) !== -1)
+    }
   },
   onLoad() {
     const systemInfo = mpx.getSystemInfoSync()
@@ -656,6 +672,90 @@ createPage({
     },
     openMembership() {
       this.currentPage = 'membership'
+    },
+    openFavorites() {
+      this.currentPage = 'favorites'
+      this.loadFavorites()
+    },
+    closeFavorites() {
+      this.currentPage = 'membership'
+    },
+    async loadFavorites() {
+      if (this.favoritesLoading) return
+      this.favoritesLoading = true
+      this.favoritesError = false
+      try {
+        const login = await mpx.login()
+        if (!login || !login.code) throw new Error('WeChat login code is missing')
+        const result = await getUserFavorites(this.menuStore.merchantId, this.menuStore.storeId, login.code)
+        const favorites = (result.favorites || []).map(entry => ({
+          ...entry.product,
+          seriesId: entry.seriesId,
+          seriesName: entry.seriesName,
+          image: getAssetUrl(entry.product.image)
+        }))
+        this.userFavorites = favorites
+        this.favoriteProductIds = favorites.map(product => product.id)
+        this.favoritesStoreLoaded = this.menuStore.storeId
+      } catch (error) {
+        this.favoritesError = true
+      } finally {
+        this.favoritesLoading = false
+      }
+    },
+    async toggleFavorite() {
+      if (this.favoriteSaving || !this.menuStore.selectedProduct) return
+      const product = this.menuStore.selectedProduct
+      this.favoriteSaving = true
+      try {
+        const login = await mpx.login()
+        if (!login || !login.code) throw new Error('WeChat login code is missing')
+        const result = await toggleUserFavorite(this.menuStore.merchantId, this.menuStore.storeId, product.id, login.code)
+        if (result.isFavorite) {
+          if (this.favoriteProductIds.indexOf(product.id) === -1) {
+            const series = this.menuStore.series.find(item => item.products.some(candidate => candidate.id === product.id))
+            this.favoriteProductIds = this.favoriteProductIds.concat(product.id)
+            this.userFavorites = this.userFavorites.concat({
+              ...product,
+              image: getAssetUrl(product.image),
+              seriesName: series ? series.name : ''
+            })
+          }
+          mpx.showToast({ title: '已收藏', icon: 'success' })
+        } else {
+          this.favoriteProductIds = this.favoriteProductIds.filter(id => id !== product.id)
+          this.userFavorites = this.userFavorites.filter(item => item.id !== product.id)
+          mpx.showToast({ title: '已取消收藏', icon: 'none' })
+        }
+      } catch (error) {
+        mpx.showToast({ title: '收藏操作失败，请重试', icon: 'none' })
+      } finally {
+        this.favoriteSaving = false
+      }
+    },
+    removeFavorite(event) {
+      const productId = event.currentTarget.dataset.id
+      if (this.favoriteSaving) return
+      this.favoriteSaving = true
+      mpx.login().then(login => {
+        if (!login || !login.code) throw new Error('WeChat login code is missing')
+        return toggleUserFavorite(this.menuStore.merchantId, this.menuStore.storeId, productId, login.code)
+      }).then(result => {
+        if (result.isFavorite) return
+        this.favoriteProductIds = this.favoriteProductIds.filter(id => id !== productId)
+        this.userFavorites = this.userFavorites.filter(item => item.id !== productId)
+      }).catch(() => {
+        mpx.showToast({ title: '移除收藏失败，请重试', icon: 'none' })
+      }).finally(() => {
+        this.favoriteSaving = false
+      })
+    },
+    openFavoriteProduct(event) {
+      const product = this.userFavorites.find(item => item.id === event.currentTarget.dataset.id)
+      if (!product) return
+      this.menuStore.selectSeries(product.seriesId)
+      this.menuStore.openProduct(product.id)
+      this.currentPage = 'menu'
     },
     openAddressBook() {
       this.addressReturnPage = ''
@@ -919,6 +1019,7 @@ createPage({
     },
     openProduct(event) {
       this.menuStore.openProduct(event.currentTarget.dataset.id)
+      if (this.favoritesStoreLoaded !== this.menuStore.storeId) this.loadFavorites()
     },
     closeProduct() {
       this.menuStore.closeProduct()
@@ -1415,39 +1516,6 @@ createPage({
   height 30rpx
   flex none
   opacity 0.55
-
-.profile-stats
-  margin-top 24rpx
-  padding-top 23rpx
-  display grid
-  grid-template-columns repeat(3, 1fr)
-  border-top 1rpx solid #eef0ed
-
-.profile-stat
-  min-width 0
-  display flex
-  flex-direction column
-  align-items center
-  gap 9rpx
-  color #515850
-
-.profile-stat + .profile-stat
-  border-left 1rpx solid #eef0ed
-
-.profile-stat image
-  width 34rpx
-  height 34rpx
-  opacity 0.75
-
-.profile-stat-value
-  color #343a35
-  font-family Georgia, 'Times New Roman', serif
-  font-size 31rpx
-  line-height 1.2
-
-.profile-stat-label
-  color #777f77
-  font-size 21rpx
 
 .profile-orders-entry
   min-height 116rpx
@@ -2292,9 +2360,85 @@ createPage({
   font-size 34rpx
   font-weight bold
 
-.favorite-icon
-  width 40rpx
-  height 40rpx
+.favorite-button
+  width 64rpx
+  height 64rpx
+  flex none
+  display flex
+  align-items center
+  justify-content center
+  border-radius 50%
+  background #f4f5f2
+  color #727a70
+  font-size 42rpx
+  line-height 1
+
+.favorite-button.favorite-active
+  background #f8e9e5
+  color #cf6657
+
+.favorites-body
+  position absolute
+  inset 108rpx 0 0
+  background #f2f4f1
+
+.favorites-list
+  width 100%
+  height 100%
+  padding 18rpx 24rpx calc(30rpx + env(safe-area-inset-bottom))
+  box-sizing border-box
+
+.favorite-card
+  margin-bottom 16rpx
+  padding 20rpx
+  display flex
+  align-items center
+  gap 16rpx
+  border-radius 18rpx
+  background #fff
+
+.favorite-card-main
+  flex 1
+  min-width 0
+  display flex
+  align-items center
+  gap 18rpx
+
+.favorite-card-main > image
+  width 144rpx
+  height 144rpx
+  flex none
+  border-radius 12rpx
+  background #f2f1ed
+
+.favorite-card-copy
+  min-width 0
+  display flex
+  flex-direction column
+  gap 7rpx
+
+.favorite-card-name
+  color #343a35
+  font-size 26rpx
+  font-weight bold
+
+.favorite-card-series, .favorite-card-description
+  overflow hidden
+  color #858b83
+  font-size 20rpx
+  text-overflow ellipsis
+  white-space nowrap
+
+.favorite-card-price
+  color #586f59
+  font-size 23rpx
+  font-weight bold
+
+.favorite-remove
+  flex none
+  padding 14rpx 8rpx
+  color #9a7770
+  font-size 21rpx
 
 .modal-description
   margin-top 17rpx
