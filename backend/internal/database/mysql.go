@@ -82,6 +82,13 @@ func Open(cfg config.DatabaseConfig) (*gorm.DB, error) {
 		&model.WeChatUser{},
 		&model.UserAddress{},
 		&model.UserFavorite{},
+		&model.MemberProfile{},
+		&model.MemberPointsLedger{},
+		&model.MemberMessage{},
+		&model.InvoiceRequest{},
+		&model.MemberBenefitCode{},
+		&model.MemberBenefit{},
+		&model.MemberRefund{},
 	); err != nil {
 		return nil, fmt.Errorf("migrate mysql schema: %w", err)
 	}

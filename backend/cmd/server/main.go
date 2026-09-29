@@ -40,7 +40,7 @@ func main() {
 	app.UseRouter(func(ctx iris.Context) {
 		ctx.Header("Access-Control-Allow-Origin", "*")
 		ctx.Header("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS")
-		ctx.Header("Access-Control-Allow-Headers", "Content-Type")
+		ctx.Header("Access-Control-Allow-Headers", "Content-Type, X-Operator-Token")
 		if ctx.Method() == http.MethodOptions {
 			ctx.StatusCode(iris.StatusNoContent)
 			return
@@ -70,6 +70,7 @@ func main() {
 		log.Printf("WeChat Pay unavailable for all configured merchants")
 	}
 	api.RegisterFavoriteRoutes(app, db, paymentGateways)
+	api.RegisterMemberRoutes(app, db, paymentGateways)
 	api.RegisterPaymentRoutesForMerchants(app, db, paymentGateways)
 
 	address := net.JoinHostPort(cfg.Server.Host, strconv.Itoa(cfg.Server.Port))

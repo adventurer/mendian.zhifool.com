@@ -20,6 +20,7 @@ import (
 type createPaymentOrderRequest struct {
 	Code            string                     `json:"code"`
 	FulfillmentType model.OrderFulfillmentType `json:"fulfillmentType"`
+	BenefitID       *uint                      `json:"benefitId"`
 }
 
 type wechatLoginRequest struct {
@@ -162,7 +163,7 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 			return
 		}
 
-		query := db.Select("order_no", "store_id", "store_name", "fulfillment_type", "status", "total_amount", "currency", "items", "created_at", "paid_at").
+		query := db.Select("order_no", "store_id", "store_name", "fulfillment_type", "status", "total_amount", "discount_amount", "currency", "items", "created_at", "paid_at").
 			Where("merchant_id = ? AND payer_open_id = ?", merchantID, openID)
 		if request.Cursor != nil {
 			query = query.Where("((created_at < ?) OR (created_at = ? AND order_no < ?))",
@@ -198,6 +199,7 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 				"fulfillmentType": order.FulfillmentType,
 				"status":          order.Status,
 				"totalAmount":     order.TotalAmount,
+				"discountAmount":  order.DiscountAmount,
 				"currency":        order.Currency,
 				"items":           order.Items,
 				"createdAt":       order.CreatedAt,
@@ -280,6 +282,19 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 			if err != nil {
 				return err
 			}
+			discountAmount := int64(0)
+			var benefit model.MemberBenefit
+			if request.BenefitID != nil {
+				if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+					Where("id = ? AND merchant_id = ? AND app_id = ? AND open_id = ? AND kind = ? AND status = ?", *request.BenefitID, merchantID, gateway.AppID(), openID, "coupon", "available").
+					First(&benefit).Error; err != nil {
+					return errInvalidCoupon
+				}
+				if (benefit.ExpiresAt != nil && !benefit.ExpiresAt.After(time.Now())) || snapshot.Total < benefit.MinimumAmount || benefit.DiscountAmount < 1 || benefit.DiscountAmount >= snapshot.Total {
+					return errInvalidCoupon
+				}
+				discountAmount = benefit.DiscountAmount
+			}
 			orderNo, err := newOrderNo()
 			if err != nil {
 				return err
@@ -293,13 +308,27 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 				CartID:          cartID,
 				OrderNo:         orderNo,
 				Status:          model.PaymentOrderStatusPending,
-				TotalAmount:     snapshot.Total,
+				TotalAmount:     snapshot.Total - discountAmount,
+				DiscountAmount:  discountAmount,
+				MemberBenefitID: request.BenefitID,
 				Currency:        "CNY",
 				Items:           snapshot.Items,
 				PayerOpenID:     openID,
 				ExpiresAt:       &expiresAt,
 			}
-			return tx.Create(&order).Error
+			if err := tx.Create(&order).Error; err != nil {
+				return err
+			}
+			if request.BenefitID != nil {
+				result := tx.Model(&benefit).Where("status = ?", "available").Updates(map[string]any{"status": "reserved", "order_no": orderNo, "reserved_until": expiresAt})
+				if result.Error != nil {
+					return result.Error
+				}
+				if result.RowsAffected != 1 {
+					return errInvalidCoupon
+				}
+			}
+			return nil
 		})
 		if err != nil {
 			if errors.Is(err, errEmptyCart) {
@@ -312,6 +341,11 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 				ctx.JSON(iris.Map{"error": "cart contains an invalid amount"})
 				return
 			}
+			if errors.Is(err, errInvalidCoupon) {
+				ctx.StatusCode(http.StatusBadRequest)
+				ctx.JSON(iris.Map{"error": "coupon is expired, unavailable, or does not meet the order minimum"})
+				return
+			}
 			ctx.StatusCode(http.StatusInternalServerError)
 			ctx.JSON(iris.Map{"error": "failed to create payment order"})
 			return
@@ -320,7 +354,16 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 		paymentParams, prepayID, err := gateway.CreateJSAPI(ctx.Request().Context(), order.OrderNo, "知甜订单", order.TotalAmount, openID)
 		if err != nil {
 			log.Printf("WeChat JSAPI prepay failed for order %s: %v", order.OrderNo, err)
-			db.Model(&order).Update("status", model.PaymentOrderStatusClosed)
+			_ = db.Transaction(func(tx *gorm.DB) error {
+				if err := tx.Model(&order).Update("status", model.PaymentOrderStatusClosed).Error; err != nil {
+					return err
+				}
+				if order.MemberBenefitID != nil {
+					return tx.Model(&model.MemberBenefit{}).Where("id = ? AND status = ? AND order_no = ?", *order.MemberBenefitID, "reserved", order.OrderNo).
+						Updates(map[string]any{"status": "available", "order_no": "", "reserved_until": nil}).Error
+				}
+				return nil
+			})
 			ctx.StatusCode(http.StatusBadGateway)
 			ctx.JSON(iris.Map{"error": "failed to create WeChat prepayment"})
 			return
@@ -340,7 +383,7 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 			return
 		}
 		var order model.PaymentOrder
-		err := db.Select("merchant_id", "store_id", "store_name", "fulfillment_type", "cart_id", "order_no", "status", "total_amount", "currency", "items", "paid_at").
+		err := db.Select("merchant_id", "store_id", "store_name", "fulfillment_type", "cart_id", "order_no", "status", "total_amount", "discount_amount", "currency", "items", "paid_at").
 			Where("merchant_id = ? AND store_id = ? AND cart_id = ? AND order_no = ?", merchantID, store.StoreID, ctx.Params().Get("cartId"), ctx.Params().Get("orderNo")).
 			First(&order).Error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -359,6 +402,7 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 			"fulfillmentType": order.FulfillmentType,
 			"status":          order.Status,
 			"totalAmount":     order.TotalAmount,
+			"discountAmount":  order.DiscountAmount,
 			"currency":        order.Currency,
 			"items":           order.Items,
 			"paidAt":          order.PaidAt,
@@ -428,7 +472,23 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 			if result.RowsAffected != 1 {
 				return errors.New("payment order status changed")
 			}
-			return removePurchasedCartItems(tx, order)
+			if err := removePurchasedCartItems(tx, order); err != nil {
+				return err
+			}
+			if err := recordMemberPurchase(tx, order, gateway.AppID()); err != nil {
+				return err
+			}
+			if order.MemberBenefitID != nil {
+				result := tx.Model(&model.MemberBenefit{}).Where("id = ? AND status = ? AND order_no = ?", *order.MemberBenefitID, "reserved", order.OrderNo).
+					Updates(map[string]any{"status": "used", "reserved_until": nil})
+				if result.Error != nil {
+					return result.Error
+				}
+				if result.RowsAffected != 1 {
+					return errors.New("coupon reservation changed")
+				}
+			}
+			return nil
 		})
 		if err != nil {
 			ctx.StatusCode(http.StatusInternalServerError)
@@ -450,6 +510,7 @@ func persistWeChatUser(db *gorm.DB, appID, openID string) error {
 var (
 	errEmptyCart        = errors.New("cart is empty")
 	errInvalidCartTotal = errors.New("cart contains an invalid amount")
+	errInvalidCoupon    = errors.New("coupon is unavailable or does not meet the order minimum")
 )
 
 func snapshotCart(cartItems []model.CartItem) (orderSnapshot, error) {

@@ -27,7 +27,7 @@
         </view>
         <view class="profile-content">
           <view class="profile-summary">
-            <view class="profile-user-row">
+            <view class="profile-user-row" bindtap="openMemberCode">
               <view class="profile-avatar">
                 <image src="{{ userIcon }}" />
               </view>
@@ -36,6 +36,17 @@
                 <view class="profile-user-caption">欢迎来到 {{ brandName }}</view>
               </view>
               <image class="profile-user-arrow" src="{{ chevronIcon }}" />
+            </view>
+            <view class="profile-stats">
+              <view class="profile-stat" bindtap="openPoints">
+                <text class="profile-stat-value">{{ memberPoints }}</text><text class="profile-stat-label">积分</text>
+              </view>
+              <view class="profile-stat" bindtap="openCoupons">
+                <text class="profile-stat-value">{{ couponCount }}</text><text class="profile-stat-label">优惠券</text>
+              </view>
+              <view class="profile-stat" bindtap="openGifts">
+                <text class="profile-stat-value">{{ giftCount }}</text><text class="profile-stat-label">礼品</text>
+              </view>
             </view>
           </view>
           <view class="profile-tools">
@@ -51,6 +62,21 @@
 
             <view class="profile-tool" bindtap="openFavorites">
               <image src="{{ starIcon }}" /><text>我的收藏</text>
+            </view>
+            <view class="profile-tool" bindtap="openPoints">
+              <image src="{{ starIcon }}" /><text>积分明细</text>
+            </view>
+            <view class="profile-tool" bindtap="openMemberCode">
+              <image src="{{ userIcon }}" /><text>会员码</text>
+            </view>
+            <view class="profile-tool" bindtap="openInvoices">
+              <image src="{{ receiptIcon }}" /><text>发票助手</text>
+            </view>
+            <view class="profile-tool" bindtap="openMessages">
+              <image src="{{ coffeeIcon }}" /><text>消息中心<text wx:if="{{ unreadMessages > 0 }}"> · {{ unreadMessages }}</text></text>
+            </view>
+            <view class="profile-tool" bindtap="openMore">
+              <image src="{{ chevronIcon }}" /><text>更多</text>
             </view>
           </view>
         </view>
@@ -101,7 +127,62 @@
         <view class="addresses-add-button" bindtap="openNewAddress">＋ 新增地址</view>
       </view>
     </view>
-    <page-container show="{{ addressFormVisible || storePickerVisible || selectedProduct }}" position="bottom"
+    <view wx:if="{{ currentPage === 'points' }}" class="destination-screen account-screen">
+      <view class="addresses-header"><view class="addresses-back" bindtap="backToMembership">‹</view><view class="addresses-heading"><text class="addresses-title">积分明细</text><text class="addresses-subtitle">每消费 1 元累计 1 积分</text></view></view>
+      <scroll-view class="account-scroll" scroll-y>
+        <view class="account-balance"><text>当前积分</text><text class="account-balance-number">{{ memberPoints }}</text></view>
+        <view wx:if="{{ pointsLoading && pointsHistory.length === 0 }}" class="address-state">正在加载积分</view>
+        <view wx:if="{{ !pointsLoading && pointsError && pointsHistory.length === 0 }}" class="address-state"><text>积分加载失败</text><view class="address-retry" bindtap="loadPoints">重新加载</view></view>
+        <view wx:if="{{ !pointsLoading && !pointsError && pointsHistory.length === 0 }}" class="address-state">完成消费后，积分会自动记入账户</view>
+        <view wx:for="{{ pointsHistory }}" wx:key="id" class="account-list-row"><view><text class="account-row-title">{{ item.description }}</text><text class="account-row-meta">{{ item.createdAtText }}</text></view><text class="account-points {{item.points < 0 ? 'account-points-negative' : ''}}">{{ item.points > 0 ? '+' : '' }}{{ item.points }}</text></view>
+      </scroll-view>
+    </view>
+    <view wx:if="{{ currentPage === 'member-code' }}" class="destination-screen account-screen">
+      <view class="addresses-header"><view class="addresses-back" bindtap="backToMembership">‹</view><view class="addresses-heading"><text class="addresses-title">会员码</text><text class="addresses-subtitle">到店出示会员编号</text></view></view>
+      <view class="member-code-card"><view class="member-code-brand">{{ brandName }}</view><text class="member-code-label">会员编号</text><text class="member-code-number">{{ memberNo || '加载中…' }}</text><view class="member-code-copy" bindtap="copyMemberNo">复制会员编号</view><text class="member-code-tip">此编号用于门店核验会员权益，请勿分享给他人</text></view>
+    </view>
+    <view wx:if="{{ currentPage === 'coupons' || currentPage === 'gifts' }}" class="destination-screen account-screen">
+      <view class="addresses-header"><view class="addresses-back" bindtap="backToMembership">‹</view><view class="addresses-heading"><text class="addresses-title">{{ currentPage === 'coupons' ? '我的优惠券' : '我的礼品' }}</text><text class="addresses-subtitle">兑换门店提供的权益码</text></view></view>
+      <view class="benefit-claim"><input class="benefit-code-input" value="{{ benefitRedeemCode }}" placeholder="输入兑换码" bindinput="onBenefitCodeInput" /><view class="benefit-claim-button {{benefitClaiming ? 'benefit-button-disabled' : ''}}" bindtap="claimBenefit">兑换</view></view>
+      <scroll-view class="account-scroll benefit-scroll" scroll-y>
+        <view wx:if="{{ benefitsLoading && memberBenefits.length === 0 }}" class="address-state">正在加载</view>
+        <view wx:if="{{ !benefitsLoading && benefitsError && memberBenefits.length === 0 }}" class="address-state"><text>加载失败</text><view class="address-retry" bindtap="loadBenefits">重新加载</view></view>
+        <view wx:if="{{ !benefitsLoading && !benefitsError && memberBenefits.length === 0 }}" class="address-state">暂无{{ currentPage === 'coupons' ? '可用优惠券' : '礼品' }}</view>
+        <view wx:for="{{ memberBenefits }}" wx:key="id" class="benefit-card"><view class="benefit-card-main"><text class="benefit-card-title">{{ item.title }}</text><text class="benefit-card-description">{{ item.description || '知甜会员权益' }}</text><text wx:if="{{ item.kind === 'coupon' }}" class="benefit-card-discount">立减 ¥ {{ item.discountAmountText }}</text><text wx:if="{{ item.kind === 'coupon' && item.minimumAmount > 0 }}" class="benefit-card-meta">满 ¥ {{ item.minimumAmountText }} 可用</text><text wx:if="{{ item.kind === 'gift' }}" class="benefit-card-meta">礼品码：{{ item.claimNo }}</text></view><text class="benefit-card-status">{{ item.status === 'used' ? (item.kind === 'gift' ? '已核销' : '已使用') : (item.expiresAtText || '长期有效') }}</text></view>
+      </scroll-view>
+    </view>
+    <view wx:if="{{ currentPage === 'invoices' }}" class="destination-screen account-screen">
+      <view class="addresses-header"><view class="addresses-back" bindtap="backToMembership">‹</view><view class="addresses-heading"><text class="addresses-title">发票助手</text><text class="addresses-subtitle">选择已支付订单申请开票</text></view></view>
+      <scroll-view class="account-scroll invoice-scroll" scroll-y>
+        <view class="invoice-form">
+          <text class="invoice-section-title">申请发票</text>
+          <view wx:if="{{ invoiceOrders.length === 0 }}" class="invoice-no-orders">暂无可开票订单</view>
+          <view wx:for="{{ invoiceOrders }}" wx:key="orderNo" class="invoice-order-option {{selectedInvoiceOrderNo === item.orderNo ? 'invoice-order-selected' : ''}}" bindtap="selectInvoiceOrder" data-order="{{item.orderNo}}"><text>{{ item.createdAtText }} · ¥ {{ item.totalAmountText }}</text><text>{{ item.orderNo }}</text></view>
+          <input class="invoice-input" value="{{ invoiceForm.title }}" placeholder="发票抬头（必填）" bindinput="onInvoiceInput" data-field="title" />
+          <input class="invoice-input" value="{{ invoiceForm.taxNumber }}" placeholder="纳税人识别号（个人可留空）" bindinput="onInvoiceInput" data-field="taxNumber" />
+          <input class="invoice-input" value="{{ invoiceForm.email }}" placeholder="接收邮箱（必填）" bindinput="onInvoiceInput" data-field="email" />
+          <view class="invoice-submit {{invoiceSubmitting ? 'benefit-button-disabled' : ''}}" bindtap="submitInvoice">{{ invoiceSubmitting ? '提交中…' : '提交开票申请' }}</view>
+        </view>
+        <text class="invoice-section-title">申请记录</text>
+        <view wx:for="{{ invoiceRequests }}" wx:key="id" class="account-list-row"><view><text class="account-row-title">{{ item.title }}</text><text class="account-row-meta">订单 {{ item.orderNo }} · {{ item.createdAtText }}</text></view><text class="invoice-status">{{ item.statusText }}</text></view>
+      </scroll-view>
+    </view>
+    <view wx:if="{{ currentPage === 'messages' }}" class="destination-screen account-screen">
+      <view class="addresses-header"><view class="addresses-back" bindtap="backToMembership">‹</view><view class="addresses-heading"><text class="addresses-title">消息中心</text><text class="addresses-subtitle">订单与会员服务通知</text></view></view>
+      <scroll-view class="account-scroll" scroll-y>
+        <view wx:if="{{ messagesLoading && memberMessages.length === 0 }}" class="address-state">正在加载消息</view>
+        <view wx:if="{{ !messagesLoading && messagesError && memberMessages.length === 0 }}" class="address-state"><text>消息加载失败</text><view class="address-retry" bindtap="loadMessages">重新加载</view></view>
+        <view wx:if="{{ !messagesLoading && !messagesError && memberMessages.length === 0 }}" class="address-state">暂无消息</view>
+        <view wx:for="{{ memberMessages }}" wx:key="id" class="message-card {{item.isRead ? 'message-card-read' : ''}}"><view class="message-card-heading"><text>{{ item.title }}</text><text>{{ item.createdAtText }}</text></view><text class="message-card-content">{{ item.content }}</text></view>
+      </scroll-view>
+    </view>
+    <view wx:if="{{ currentPage === 'more' }}" class="destination-screen account-screen">
+      <view class="addresses-header"><view class="addresses-back" bindtap="backToMembership">‹</view><view class="addresses-heading"><text class="addresses-title">更多服务</text><text class="addresses-subtitle">知甜会员服务与帮助</text></view></view>
+      <scroll-view class="account-scroll" scroll-y>
+        <view class="more-card"><text class="more-heading">常见问题</text><text class="more-question">积分如何累计？</text><text class="more-answer">每消费 1 元累计 1 积分，支付成功后自动入账；退款确认后按退款金额扣回积分。</text><text class="more-question">优惠券和礼品如何使用？</text><text class="more-answer">输入门店提供的权益兑换码领取。优惠券满足订单金额条件后可在结算时使用；礼品请向门店出示礼品码核销。</text><text class="more-question">如何申请发票？</text><text class="more-answer">在发票助手中选择已支付订单，填写抬头和接收邮箱。门店会处理申请并联系您。</text><text class="more-question">如何联系门店？</text><view class="more-contact" bindtap="callStore">联系当前门店</view></view>
+      </scroll-view>
+    </view>
+    <page-container show="{{ addressFormVisible || storePickerVisible || couponPickerVisible || selectedProduct }}" position="bottom"
       duration="300" overlay="{{ true }}" round="{{ true }}" close-on-slide-down="{{ true }}"
       bind:beforeleave="closeNativeSheet" bind:clickoverlay="closeNativeSheet">
       <view wx:if="{{ addressFormVisible }}" class="address-form-sheet">
@@ -160,6 +241,16 @@
               <text wx:if="{{ item.storeId === storeId }}" class="store-option-selected">当前</text>
             </view>
           </view>
+        </scroll-view>
+      </view>
+      <view wx:elif="{{ couponPickerVisible }}" class="store-picker-sheet">
+        <view class="store-picker-header"><text>选择优惠券</text><view class="store-picker-close" bindtap="closeCouponPicker">×</view></view>
+        <scroll-view class="store-picker-list" scroll-y>
+          <view class="store-option" bindtap="clearCoupon"><view class="store-option-copy"><text class="store-option-name">不使用优惠券</text></view><text wx:if="{{ !selectedCouponId }}" class="store-option-selected">当前</text></view>
+          <view wx:for="{{ couponOptions }}" wx:key="id" class="store-option" bindtap="selectCoupon" data-id="{{item.id}}">
+            <view class="store-option-copy"><text class="store-option-name">{{ item.title }} · 立减 ¥{{ item.discountAmountText }}</text><text class="store-option-address">{{ item.minimumAmount > 0 ? '满 ¥' + item.minimumAmountText + ' 可用' : '无门槛' }}</text></view><text wx:if="{{ item.id === selectedCouponId }}" class="store-option-selected">当前</text>
+          </view>
+          <view wx:if="couponOptions.length === 0" class="address-state">暂无可用优惠券</view>
         </scroll-view>
       </view>
       <view wx:elif="{{ selectedProduct }}" class="modal-sheet">
@@ -391,10 +482,11 @@
               bindtap="selectFulfillmentType" data-type="dine_in">堂食</view>
           </view>
         </view>
+        <view class="cart-coupon-row" bindtap="openCouponPicker"><text>优惠券</text><text>{{ selectedCoupon ? selectedCoupon.title + ' · -¥' + selectedCoupon.discountAmountText : '选择优惠券 ›' }}</text></view>
         <view class="cart-footer-main">
           <view class="cart-total">
             <text class="cart-total-label">合计</text>
-            <text class="cart-total-value">¥ {{ cartTotal }}</text>
+            <text class="cart-total-value">¥ {{ cartPayableTotal }}</text>
           </view>
           <view class="cart-footer-actions">
             <view class="cart-continue" bindtap="closeCart">继续点单</view>
@@ -420,6 +512,7 @@
           </view>
           <view class="payment-success-meta-row"><text>支付时间</text><text>{{ successOrder.paidAtText || '已确认' }}</text>
           </view>
+          <view wx:if="{{ successOrder.discountAmount > 0 }}" class="payment-success-meta-row"><text>优惠券抵扣</text><text>- ¥ {{ successOrder.discountAmountText }}</text></view>
         </view>
         <view class="payment-success-items">
           <view class="payment-success-section-title">商品明细</view>
@@ -440,7 +533,7 @@
     <view wx:if="{{ currentPage !== 'store' && currentPage !== 'cart' && currentPage !== 'payment-success' }}"
       class="bottom-nav">
       <view wx:for="{{ navigation }}" wx:key="page"
-        class="nav-item {{currentPage === item.page || ((currentPage === 'orders' || currentPage === 'addresses' || currentPage === 'favorites') && item.page === 'membership') ? 'nav-active' : ''}}"
+        class="nav-item {{currentPage === item.page || ((currentPage === 'orders' || currentPage === 'addresses' || currentPage === 'favorites' || currentPage === 'points' || currentPage === 'coupons' || currentPage === 'gifts' || currentPage === 'member-code' || currentPage === 'invoices' || currentPage === 'messages' || currentPage === 'more') && item.page === 'membership') ? 'nav-active' : ''}}"
         bindtap="changePage" data-page="{{ item.page }}">
         <image class="nav-icon" src="{{ item.icon }}" />
         <text>{{ item.label }}</text>
@@ -454,7 +547,7 @@
 import mpx, { createPage } from '@mpxjs/core'
 import { mapState, mapStores } from '@mpxjs/pinia'
 import { useMenuStore } from '../store/menu'
-import { createPaymentOrder, createUserAddress, deleteUserAddress, getAssetUrl, getMyPaymentOrders, getPaymentOrder, getUserAddresses, getUserFavorites, loginWithWechat, toggleUserFavorite, updateUserAddress } from '../api/menu'
+import { claimMemberBenefit, createInvoiceRequest, createPaymentOrder, createUserAddress, deleteUserAddress, getAssetUrl, getInvoiceRequests, getMemberBenefits, getMemberMessages, getMemberPoints, getMemberSummary, getMyPaymentOrders, getPaymentOrder, getUserAddresses, getUserFavorites, loginWithWechat, markAllMemberMessagesRead, toggleUserFavorite, updateUserAddress } from '../api/menu'
 import mapPinIcon from '../assets/icons/map-pin.svg'
 import mapIcon from '../assets/icons/map.svg'
 import chevronIcon from '../assets/icons/chevron-right.svg'
@@ -530,6 +623,33 @@ createPage({
     favoritesLoading: false,
     favoritesError: false,
     favoriteSaving: false,
+    memberNo: '',
+    memberPoints: 0,
+    couponCount: 0,
+    giftCount: 0,
+    unreadMessages: 0,
+    memberLoading: false,
+    pointsHistory: [],
+    pointsLoading: false,
+    pointsError: false,
+    memberBenefits: [],
+    benefitsLoading: false,
+    benefitsError: false,
+    benefitClaiming: false,
+    benefitRedeemCode: '',
+    couponPickerVisible: false,
+    couponOptions: [],
+    selectedCouponId: null,
+    selectedCoupon: null,
+    messagesLoading: false,
+    messagesError: false,
+    memberMessages: [],
+    invoiceLoading: false,
+    invoiceSubmitting: false,
+    invoiceOrders: [],
+    invoiceRequests: [],
+    selectedInvoiceOrderNo: '',
+    invoiceForm: { title: '', taxNumber: '', email: '' },
     addressesLoading: false,
     addressesRefreshing: false,
     addressesError: false,
@@ -577,6 +697,10 @@ createPage({
     ...mapState(useMenuStore, ['brandName', 'series', 'activeSeries', 'activeSeriesId', 'selectedProduct', 'selectedPrice', 'selectedSummary', 'quantity', 'cartLines', 'cartCount', 'cartTotal', 'activeStore', 'stores', 'storeId']),
     isSelectedFavorite() {
       return Boolean(this.menuStore.selectedProduct && this.favoriteProductIds.indexOf(this.menuStore.selectedProduct.id) !== -1)
+    },
+    cartPayableTotal() {
+      const amount = Number(this.menuStore.cartTotal || 0) - Number(this.selectedCoupon ? this.selectedCoupon.discountAmount : 0) / 100
+      return Math.max(0, amount).toFixed(2)
     }
   },
   onLoad() {
@@ -652,6 +776,7 @@ createPage({
     },
     closeNativeSheet() {
       this.storePickerVisible = false
+      this.couponPickerVisible = false
       this.addressFormVisible = false
       this.menuStore.closeProduct()
     },
@@ -672,6 +797,195 @@ createPage({
     },
     openMembership() {
       this.currentPage = 'membership'
+      this.loadMemberSummary()
+    },
+    async loadMemberSummary() {
+      if (this.memberLoading) return
+      this.memberLoading = true
+      try {
+        const login = await mpx.login()
+        if (!login || !login.code) throw new Error('WeChat login code is missing')
+        const result = await getMemberSummary(this.menuStore.merchantId, login.code)
+        this.memberNo = result.memberNo || ''
+        this.memberPoints = Number(result.points || 0)
+        this.couponCount = Number(result.couponCount || 0)
+        this.giftCount = Number(result.giftCount || 0)
+        this.unreadMessages = Number(result.unreadMessages || 0)
+      } catch (error) {
+        mpx.showToast({ title: '会员信息加载失败', icon: 'none' })
+      } finally {
+        this.memberLoading = false
+      }
+    },
+    backToMembership() {
+      this.currentPage = 'membership'
+      this.loadMemberSummary()
+    },
+    openPoints() {
+      this.currentPage = 'points'
+      this.loadPoints()
+    },
+    async loadPoints() {
+      if (this.pointsLoading) return
+      this.pointsLoading = true
+      this.pointsError = false
+      try {
+        const login = await mpx.login()
+        if (!login || !login.code) throw new Error('WeChat login code is missing')
+        const result = await getMemberPoints(this.menuStore.merchantId, login.code)
+        this.memberPoints = Number(result.points || 0)
+        this.pointsHistory = (result.history || []).map(item => ({ ...item, createdAtText: formatPaidAt(item.createdAt) }))
+      } catch (error) {
+        this.pointsError = true
+      } finally {
+        this.pointsLoading = false
+      }
+    },
+    openCoupons() {
+      this.currentPage = 'coupons'
+      this.loadBenefits('coupon')
+    },
+    openGifts() {
+      this.currentPage = 'gifts'
+      this.loadBenefits('gift')
+    },
+    openMemberCode() {
+      this.currentPage = 'member-code'
+      if (!this.memberNo) this.loadMemberSummary()
+    },
+    copyMemberNo() {
+      if (!this.memberNo) return
+      mpx.setClipboardData({ data: this.memberNo }).then(() => mpx.showToast({ title: '会员编号已复制', icon: 'success' }))
+    },
+    async loadBenefits(kind) {
+      if (this.benefitsLoading) return
+      this.benefitsLoading = true
+      this.benefitsError = false
+      try {
+        const login = await mpx.login()
+        if (!login || !login.code) throw new Error('WeChat login code is missing')
+        const result = await getMemberBenefits(this.menuStore.merchantId, kind, login.code)
+        this.memberBenefits = (result.benefits || []).map(item => ({
+          ...item,
+          discountAmountText: formatMoney(item.discountAmount),
+          minimumAmountText: formatMoney(item.minimumAmount),
+          expiresAtText: item.expiresAt ? `有效期至 ${item.expiresAt.slice(0, 10)}` : ''
+        }))
+      } catch (error) {
+        this.benefitsError = true
+      } finally {
+        this.benefitsLoading = false
+      }
+    },
+    onBenefitCodeInput(event) {
+      this.benefitRedeemCode = String(event.detail.value || '').trim().toUpperCase()
+    },
+    async claimBenefit() {
+      if (this.benefitClaiming) return
+      if (!this.benefitRedeemCode) { mpx.showToast({ title: '请输入兑换码', icon: 'none' }); return }
+      this.benefitClaiming = true
+      try {
+        const login = await mpx.login()
+        if (!login || !login.code) throw new Error('WeChat login code is missing')
+        const kind = this.currentPage === 'gifts' ? 'gift' : 'coupon'
+        await claimMemberBenefit(this.menuStore.merchantId, kind, this.benefitRedeemCode, login.code)
+        this.benefitRedeemCode = ''
+        await this.loadBenefits(kind)
+        await this.loadMemberSummary()
+        mpx.showToast({ title: '兑换成功', icon: 'success' })
+      } catch (error) {
+        const message = error && error.message
+        mpx.showToast({ title: message === 'this code has already been claimed' ? '该兑换码已使用' : '兑换码无效或已过期', icon: 'none' })
+      } finally {
+        this.benefitClaiming = false
+      }
+    },
+    async openInvoices() {
+      this.currentPage = 'invoices'
+      await this.loadInvoices()
+    },
+    async loadInvoices() {
+      if (this.invoiceLoading) return
+      this.invoiceLoading = true
+      try {
+        const login = await mpx.login()
+        if (!login || !login.code) throw new Error('WeChat login code is missing')
+        const result = await getInvoiceRequests(this.menuStore.merchantId, login.code)
+        this.invoiceRequests = (result.invoices || []).map(item => ({
+          ...item,
+          createdAtText: formatPaidAt(item.createdAt),
+          statusText: ({ pending: '待处理', processing: '处理中', issued: '已开具', rejected: '需补充信息' })[item.status] || item.status
+        }))
+        const page = await this.fetchMyOrders(null)
+        const invoicedOrders = new Set(this.invoiceRequests.map(item => item.orderNo))
+        this.invoiceOrders = page.orders.filter(item => item.status === 'paid' && !invoicedOrders.has(item.orderNo))
+        if (!this.invoiceOrders.some(item => item.orderNo === this.selectedInvoiceOrderNo)) {
+          this.selectedInvoiceOrderNo = this.invoiceOrders[0] ? this.invoiceOrders[0].orderNo : ''
+        }
+      } catch (error) {
+        mpx.showToast({ title: '发票信息加载失败', icon: 'none' })
+      } finally {
+        this.invoiceLoading = false
+      }
+    },
+    selectInvoiceOrder(event) {
+      this.selectedInvoiceOrderNo = event.currentTarget.dataset.order
+    },
+    onInvoiceInput(event) {
+      const field = event.currentTarget.dataset.field
+      this.invoiceForm = { ...this.invoiceForm, [field]: event.detail.value }
+    },
+    async submitInvoice() {
+      if (this.invoiceSubmitting) return
+      if (!this.selectedInvoiceOrderNo || !this.invoiceForm.title.trim() || !this.invoiceForm.email.trim()) {
+        mpx.showToast({ title: '请选择订单并填写发票抬头和邮箱', icon: 'none' })
+        return
+      }
+      this.invoiceSubmitting = true
+      try {
+        const login = await mpx.login()
+        if (!login || !login.code) throw new Error('WeChat login code is missing')
+        await createInvoiceRequest(this.menuStore.merchantId, login.code, {
+          orderNo: this.selectedInvoiceOrderNo,
+          ...this.invoiceForm
+        })
+        this.invoiceForm = { title: '', taxNumber: '', email: '' }
+        this.selectedInvoiceOrderNo = ''
+        await this.loadInvoices()
+        mpx.showToast({ title: '开票申请已提交', icon: 'success' })
+      } catch (error) {
+        mpx.showToast({ title: '提交失败，请检查信息后重试', icon: 'none' })
+      } finally {
+        this.invoiceSubmitting = false
+      }
+    },
+    async openMessages() {
+      this.currentPage = 'messages'
+      await this.loadMessages()
+    },
+    async loadMessages() {
+      if (this.messagesLoading) return
+      this.messagesLoading = true
+      this.messagesError = false
+      try {
+        const login = await mpx.login()
+        if (!login || !login.code) throw new Error('WeChat login code is missing')
+        const result = await getMemberMessages(this.menuStore.merchantId, login.code)
+        this.memberMessages = (result.messages || []).map(item => ({ ...item, createdAtText: formatPaidAt(item.createdAt) }))
+        if (this.memberMessages.some(item => !item.isRead)) {
+          const readLogin = await mpx.login()
+          await markAllMemberMessagesRead(this.menuStore.merchantId, readLogin.code)
+          this.memberMessages = this.memberMessages.map(item => ({ ...item, isRead: true }))
+          this.unreadMessages = 0
+        }
+      } catch (error) {
+        this.messagesError = true
+      } finally {
+        this.messagesLoading = false
+      }
+    },
+    openMore() {
+      this.currentPage = 'more'
     },
     openFavorites() {
       this.currentPage = 'favorites'
@@ -1013,6 +1327,7 @@ createPage({
     },
     changePage(event) {
       this.currentPage = event.currentTarget.dataset.page
+      if (this.currentPage === 'membership') this.loadMemberSummary()
     },
     selectSeries(event) {
       this.menuStore.selectSeries(event.currentTarget.dataset.id)
@@ -1060,6 +1375,42 @@ createPage({
     selectFulfillmentType(event) {
       this.fulfillmentType = event.currentTarget.dataset.type
     },
+    async openCouponPicker() {
+      this.couponPickerVisible = true
+      try {
+        const login = await mpx.login()
+        if (!login || !login.code) throw new Error('WeChat login code is missing')
+        const result = await getMemberBenefits(this.menuStore.merchantId, 'coupon', login.code)
+        const cartTotalFen = Math.round(Number(this.menuStore.cartTotal || 0) * 100)
+        this.couponOptions = (result.benefits || []).filter(item => item.status === 'available' && item.discountAmount < cartTotalFen && item.minimumAmount <= cartTotalFen).map(item => ({
+          ...item,
+          discountAmountText: formatMoney(item.discountAmount),
+          minimumAmountText: formatMoney(item.minimumAmount)
+        }))
+        if (this.selectedCouponId && !this.couponOptions.some(item => item.id === this.selectedCouponId)) {
+          this.selectedCouponId = null
+          this.selectedCoupon = null
+        }
+      } catch (error) {
+        this.couponOptions = []
+        mpx.showToast({ title: '优惠券加载失败，请重试', icon: 'none' })
+      }
+    },
+    closeCouponPicker() {
+      this.couponPickerVisible = false
+    },
+    clearCoupon() {
+      this.selectedCouponId = null
+      this.selectedCoupon = null
+      this.closeCouponPicker()
+    },
+    selectCoupon(event) {
+      const coupon = this.couponOptions.find(item => item.id === Number(event.currentTarget.dataset.id))
+      if (!coupon) return
+      this.selectedCouponId = coupon.id
+      this.selectedCoupon = coupon
+      this.closeCouponPicker()
+    },
     async payNow() {
       if (this.paying) return
       if (this.menuStore.activeStore && this.menuStore.activeStore.isTest) {
@@ -1090,7 +1441,7 @@ createPage({
         }
         const login = await mpx.login()
         if (!login || !login.code) throw new Error('微信登录失败，请重试')
-        const order = await createPaymentOrder(this.menuStore.merchantId, this.menuStore.cartId, login.code, this.menuStore.storeId, this.fulfillmentType)
+        const order = await createPaymentOrder(this.menuStore.merchantId, this.menuStore.cartId, login.code, this.menuStore.storeId, this.fulfillmentType, this.selectedCouponId)
         await mpx.requestPayment(order.payment)
 
         let status = 'pending'
@@ -1111,6 +1462,7 @@ createPage({
           this.successOrder = {
             ...paidOrder,
             totalAmountText: formatMoney(paidOrder.totalAmount),
+            discountAmountText: formatMoney(paidOrder.discountAmount),
             paidAtText: formatPaidAt(paidOrder.paidAt),
             fulfillmentTypeText: formatFulfillmentType(paidOrder.fulfillmentType),
             items: (paidOrder.items || []).map(item => ({
@@ -1119,6 +1471,8 @@ createPage({
             }))
           }
           this.currentPage = 'payment-success'
+          this.selectedCouponId = null
+          this.selectedCoupon = null
           try {
             await this.menuStore.refreshCart()
           } catch (error) {
@@ -1139,6 +1493,8 @@ createPage({
           this.addressReturnPage = 'cart'
           this.currentPage = 'addresses'
           this.loadAddresses()
+        } else if (message.includes('coupon is expired')) {
+          title = '优惠券已不可用，请重新选择'
         }
         mpx.showToast({
           title,
@@ -1516,6 +1872,33 @@ createPage({
   height 30rpx
   flex none
   opacity 0.55
+
+.profile-stats
+  margin-top 24rpx
+  padding-top 20rpx
+  display grid
+  grid-template-columns repeat(3, 1fr)
+  border-top 1rpx solid #eef0ed
+
+.profile-stat
+  display flex
+  flex-direction column
+  align-items center
+  gap 6rpx
+  color #515850
+
+.profile-stat + .profile-stat
+  border-left 1rpx solid #eef0ed
+
+.profile-stat-value
+  color #343a35
+  font-family Georgia, 'Times New Roman', serif
+  font-size 31rpx
+  line-height 1.2
+
+.profile-stat-label
+  color #777f77
+  font-size 21rpx
 
 .profile-orders-entry
   min-height 116rpx
@@ -2440,6 +2823,286 @@ createPage({
   color #9a7770
   font-size 21rpx
 
+.account-screen
+  flex-direction column
+  align-items stretch
+  justify-content flex-start
+  background #f3f5f2
+  font-family Arial, sans-serif
+
+.account-scroll
+  flex 1
+  width 100%
+  min-height 0
+  box-sizing border-box
+  padding 18rpx 24rpx calc(28rpx + env(safe-area-inset-bottom))
+
+.account-balance
+  min-height 176rpx
+  margin-bottom 16rpx
+  padding 26rpx 30rpx
+  display flex
+  flex-direction column
+  justify-content center
+  gap 10rpx
+  border-radius 16rpx
+  background linear-gradient(135deg, #637c65, #415e49)
+  color #fff
+  font-size 23rpx
+
+.account-balance-number
+  font-family Georgia, 'Times New Roman', serif
+  font-size 60rpx
+  font-weight bold
+
+.account-list-row
+  min-height 104rpx
+  padding 18rpx 20rpx
+  display flex
+  align-items center
+  justify-content space-between
+  gap 18rpx
+  border-bottom 1rpx solid #edf0ec
+  background #fff
+
+.account-row-title, .account-row-meta
+  display block
+
+.account-row-title
+  color #394139
+  font-size 24rpx
+
+.account-row-meta
+  margin-top 8rpx
+  color #929992
+  font-size 19rpx
+
+.account-points
+  color #547456
+  font-size 25rpx
+  font-weight bold
+
+.account-points-negative
+  color #ae6a5c
+
+.member-code-card
+  margin 70rpx 32rpx
+  padding 48rpx 28rpx
+  display flex
+  flex-direction column
+  align-items center
+  gap 22rpx
+  border-radius 24rpx
+  background #fff
+  box-shadow 0 8rpx 28rpx rgba(43, 56, 44, .08)
+
+.member-code-brand
+  color #526e56
+  font-family Georgia, 'Times New Roman', serif
+  font-size 36rpx
+  font-weight bold
+
+.member-code-label
+  margin-top 24rpx
+  color #858c85
+  font-size 22rpx
+
+.member-code-number
+  color #313a32
+  font-family Arial, sans-serif
+  font-size 42rpx
+  font-weight bold
+  letter-spacing 5rpx
+
+.member-code-copy
+  margin-top 10rpx
+  padding 16rpx 34rpx
+  border-radius 40rpx
+  background #eaf0e9
+  color #45634c
+  font-size 22rpx
+
+.member-code-tip
+  margin-top 10rpx
+  color #929992
+  font-size 19rpx
+  text-align center
+
+.benefit-claim
+  flex none
+  margin 18rpx 24rpx 0
+  padding 12rpx 14rpx 12rpx 22rpx
+  display flex
+  align-items center
+  gap 14rpx
+  border-radius 14rpx
+  background #fff
+
+.benefit-code-input
+  flex 1
+  height 66rpx
+  font-size 23rpx
+
+.benefit-claim-button, .invoice-submit
+  padding 17rpx 30rpx
+  border-radius 36rpx
+  background #526e56
+  color #fff
+  font-size 22rpx
+  text-align center
+
+.benefit-button-disabled
+  opacity .55
+
+.benefit-scroll
+  margin-top 10rpx
+
+.benefit-card
+  margin-bottom 16rpx
+  padding 24rpx
+  display flex
+  align-items center
+  justify-content space-between
+  gap 20rpx
+  border-radius 14rpx
+  background #fff
+
+.benefit-card-main
+  display flex
+  flex-direction column
+  gap 9rpx
+
+.benefit-card-title
+  color #364038
+  font-size 26rpx
+  font-weight bold
+
+.benefit-card-description, .benefit-card-meta
+  color #878e87
+  font-size 20rpx
+
+.benefit-card-discount
+  color #bc6751
+  font-size 26rpx
+  font-weight bold
+
+.benefit-card-status, .invoice-status
+  flex none
+  color #828a82
+  font-size 19rpx
+
+.invoice-scroll
+  padding-top 20rpx
+
+.invoice-form
+  margin-bottom 24rpx
+  padding 22rpx
+  border-radius 14rpx
+  background #fff
+
+.invoice-section-title
+  display block
+  margin 8rpx 0 18rpx
+  color #394139
+  font-size 24rpx
+  font-weight bold
+
+.invoice-order-option
+  margin-bottom 10rpx
+  padding 16rpx
+  display flex
+  flex-direction column
+  gap 8rpx
+  border 1rpx solid #edf0ec
+  border-radius 10rpx
+  color #626a62
+  font-size 20rpx
+
+.invoice-order-selected
+  border-color #64806a
+  background #f1f6f0
+
+.invoice-no-orders
+  margin-bottom 16rpx
+  color #8c938c
+  font-size 20rpx
+
+.invoice-input
+  height 78rpx
+  margin-top 12rpx
+  padding 0 18rpx
+  box-sizing border-box
+  border-radius 10rpx
+  background #f5f6f3
+  font-size 21rpx
+
+.invoice-submit
+  margin-top 18rpx
+
+.message-card
+  margin-bottom 16rpx
+  padding 22rpx
+  border-radius 12rpx
+  background #fff
+
+.message-card-read
+  opacity .75
+
+.message-card-heading
+  display flex
+  justify-content space-between
+  gap 16rpx
+  color #3a433b
+  font-size 23rpx
+  font-weight bold
+
+.message-card-heading text + text
+  color #939a93
+  font-size 18rpx
+  font-weight normal
+
+.message-card-content
+  display block
+  margin-top 14rpx
+  color #707970
+  font-size 21rpx
+  line-height 1.6
+
+.more-card
+  padding 26rpx
+  border-radius 14rpx
+  background #fff
+
+.more-heading
+  display block
+  margin-bottom 24rpx
+  color #394139
+  font-size 27rpx
+  font-weight bold
+
+.more-question
+  display block
+  margin-top 24rpx
+  color #435047
+  font-size 22rpx
+  font-weight bold
+
+.more-answer
+  display block
+  margin-top 10rpx
+  color #858d85
+  font-size 20rpx
+  line-height 1.6
+
+.more-contact
+  margin-top 16rpx
+  padding 16rpx
+  border-radius 10rpx
+  background #eff3ee
+  color #4d6a53
+  font-size 21rpx
+  text-align center
+
 .modal-description
   margin-top 17rpx
   color #888481
@@ -2776,6 +3439,19 @@ createPage({
   background #315b43
   color #fff
   font-weight bold
+
+.cart-coupon-row
+  min-height 58rpx
+  padding 0 4rpx
+  display flex
+  align-items center
+  justify-content space-between
+  color #687068
+  font-family Arial, sans-serif
+  font-size 21rpx
+
+.cart-coupon-row text:last-child
+  color #8b6952
 
 .cart-footer-main
   width 100%

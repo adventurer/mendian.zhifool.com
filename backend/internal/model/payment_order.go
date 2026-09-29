@@ -13,6 +13,8 @@ type PaymentOrder struct {
 	OrderNo             string               `json:"orderNo" gorm:"size:64;not null;uniqueIndex:idx_payment_orders_merchant_order_no,priority:2"`
 	Status              PaymentOrderStatus   `json:"status" gorm:"size:16;not null;default:pending;index:idx_payment_orders_merchant_status,priority:2"`
 	TotalAmount         int64                `json:"totalAmount" gorm:"not null"`
+	DiscountAmount      int64                `json:"discountAmount" gorm:"not null;default:0"`
+	MemberBenefitID     *uint                `json:"memberBenefitId,omitempty" gorm:"index"`
 	Currency            string               `json:"currency" gorm:"size:3;not null;default:CNY"`
 	Items               []PaymentOrderItem   `json:"items" gorm:"serializer:json;type:text;not null"`
 	WeChatTransactionID *string              `json:"wechatTransactionId,omitempty" gorm:"size:64;uniqueIndex"`

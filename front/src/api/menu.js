@@ -120,6 +120,42 @@ export function toggleUserFavorite(merchantId, storeId, productId, code) {
   })
 }
 
+export function getMemberSummary(merchantId, code) {
+  return request(`/api/merchants/${encodeURIComponent(merchantId)}/members/summary`, { method: 'POST', data: { code } })
+}
+
+export function getMemberPoints(merchantId, code) {
+  return request(`/api/merchants/${encodeURIComponent(merchantId)}/members/points`, { method: 'POST', data: { code } })
+}
+
+export function getMemberMessages(merchantId, code) {
+  return request(`/api/merchants/${encodeURIComponent(merchantId)}/messages/list`, { method: 'POST', data: { code } })
+}
+
+export function markMemberMessageRead(merchantId, messageId, code) {
+  return request(`/api/merchants/${encodeURIComponent(merchantId)}/messages/${encodeURIComponent(messageId)}/read`, { method: 'PATCH', data: { code } })
+}
+
+export function markAllMemberMessagesRead(merchantId, code) {
+  return request(`/api/merchants/${encodeURIComponent(merchantId)}/messages/read-all`, { method: 'POST', data: { code } })
+}
+
+export function getMemberBenefits(merchantId, kind, code) {
+  return request(`/api/merchants/${encodeURIComponent(merchantId)}/benefits/${encodeURIComponent(kind)}/list`, { method: 'POST', data: { code } })
+}
+
+export function claimMemberBenefit(merchantId, kind, redeemCode, code) {
+  return request(`/api/merchants/${encodeURIComponent(merchantId)}/benefits/${encodeURIComponent(kind)}/claim`, { method: 'POST', data: { code, redeemCode } })
+}
+
+export function getInvoiceRequests(merchantId, code) {
+  return request(`/api/merchants/${encodeURIComponent(merchantId)}/invoices/list`, { method: 'POST', data: { code } })
+}
+
+export function createInvoiceRequest(merchantId, code, invoice) {
+  return request(`/api/merchants/${encodeURIComponent(merchantId)}/invoices`, { method: 'POST', data: { ...invoice, code } })
+}
+
 export function getUserAddresses(merchantId, code) {
   return request(`/api/merchants/${encodeURIComponent(merchantId)}/addresses/list`, {
     method: 'POST',
@@ -148,10 +184,10 @@ export function deleteUserAddress(merchantId, addressId, code) {
   })
 }
 
-export function createPaymentOrder(merchantId, cartId, code, storeId, fulfillmentType) {
+export function createPaymentOrder(merchantId, cartId, code, storeId, fulfillmentType, benefitId = null) {
   return request(withStore(`/api/merchants/${encodeURIComponent(merchantId)}/carts/${encodeURIComponent(cartId)}/orders`, storeId), {
     method: 'POST',
-    data: { code, fulfillmentType }
+    data: { code, fulfillmentType, benefitId }
   })
 }
 
