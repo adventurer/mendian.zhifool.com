@@ -4,3 +4,6 @@
 /config.yaml
 /certs/
 /letscache/
+/assets/
+mendian_server
+server.exe

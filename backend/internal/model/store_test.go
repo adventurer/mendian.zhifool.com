@@ -21,6 +21,10 @@ func TestStoreUsesMerchantScopedIdentity(t *testing.T) {
 			t.Fatalf("expected %s to be part of the store primary key", fieldName)
 		}
 	}
+	phone := parsed.LookUpField("Phone")
+	if phone == nil || phone.DBName != "phone" {
+		t.Fatalf("phone field maps to %v, want column phone", phone)
+	}
 }
 
 func TestCartAndOrderModelsPersistStoreIdentity(t *testing.T) {

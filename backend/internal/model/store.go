@@ -9,6 +9,7 @@ type Store struct {
 	MerchantID string    `json:"merchantId" gorm:"primaryKey;size:64"`
 	StoreID    string    `json:"storeId" gorm:"primaryKey;size:64"`
 	Name       string    `json:"name" gorm:"size:128;not null"`
+	Phone      string    `json:"phone" gorm:"size:24;not null;default:''"`
 	Address    string    `json:"address" gorm:"size:255;not null;default:''"`
 	Latitude   float64   `json:"latitude" gorm:"not null;default:0"`
 	Longitude  float64   `json:"longitude" gorm:"not null;default:0"`

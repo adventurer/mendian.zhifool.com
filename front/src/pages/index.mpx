@@ -63,7 +63,7 @@
               <image src="{{ coffeeIcon }}" /><text>联系门店</text>
             </view>
 
-            <!-- <view class="profile-tool">
+            <view class="profile-tool">
               <image src="{{ starIcon }}" /><text>积分明细</text>
             </view>
             <view class="profile-tool">
@@ -77,7 +77,7 @@
             </view>
             <view class="profile-tool">
               <image src="{{ chevronIcon }}" /><text>更多</text>
-            </view> -->
+            </view>
           </view>
         </view>
       </scroll-view>

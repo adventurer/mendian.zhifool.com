@@ -37,6 +37,9 @@ func CreateDatabase(cfg config.DatabaseConfig) error {
 		return fmt.Errorf("open mysql server connection: %w", err)
 	}
 	defer sqlDB.Close()
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -55,7 +58,10 @@ func Open(cfg config.DatabaseConfig) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		SkipDefaultTransaction: false,
+		PrepareStmt:            true,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("connect to mysql: %w", err)
 	}
@@ -63,7 +69,19 @@ func Open(cfg config.DatabaseConfig) (*gorm.DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("read legacy menu data: %w", err)
 	}
-	if err := db.AutoMigrate(&model.Merchant{}, &model.Store{}, &model.StoreMenu{}, &model.StoreMenuSeries{}, &model.StoreProduct{}, &model.StoreProductOption{}, &model.StoreProductOptionValue{}, &model.CartItem{}, &model.PaymentOrder{}, &model.WeChatUser{}, &model.UserAddress{}); err != nil {
+	if err := db.AutoMigrate(
+		&model.Merchant{},
+		&model.Store{},
+		&model.StoreMenu{},
+		&model.StoreMenuSeries{},
+		&model.StoreProduct{},
+		&model.StoreProductOption{},
+		&model.StoreProductOptionValue{},
+		&model.CartItem{},
+		&model.PaymentOrder{},
+		&model.WeChatUser{},
+		&model.UserAddress{},
+	); err != nil {
 		return nil, fmt.Errorf("migrate mysql schema: %w", err)
 	}
 	if hasLegacyTables {
@@ -211,14 +229,15 @@ func buildDSN(cfg config.DatabaseConfig) (string, error) {
 	}
 
 	dsn := mysqlDriver.Config{
-		User:      cfg.Username,
-		Passwd:    cfg.Password,
-		Net:       "tcp",
-		Addr:      net.JoinHostPort(cfg.Host, strconv.Itoa(cfg.Port)),
-		DBName:    cfg.Name,
-		Params:    map[string]string{"charset": cfg.Charset},
-		ParseTime: cfg.ParseTime,
-		Loc:       location,
+		User:                 cfg.Username,
+		Passwd:               cfg.Password,
+		Net:                  "tcp",
+		Addr:                 net.JoinHostPort(cfg.Host, strconv.Itoa(cfg.Port)),
+		DBName:               cfg.Name,
+		Params:               map[string]string{"charset": cfg.Charset},
+		ParseTime:            cfg.ParseTime,
+		Loc:                  location,
+		AllowNativePasswords: true,
 	}
 	return dsn.FormatDSN(), nil
 }

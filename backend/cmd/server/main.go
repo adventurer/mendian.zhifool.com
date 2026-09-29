@@ -47,6 +47,7 @@ func main() {
 		}
 		ctx.Next()
 	})
+	app.HandleDir("/assets", iris.Dir("./assets"), iris.DirOptions{ShowList: false, ShowHidden: false})
 	app.Get("/api/health", func(ctx iris.Context) {
 		if err := sqlDB.PingContext(ctx.Request().Context()); err != nil {
 			ctx.StatusCode(iris.StatusServiceUnavailable)
