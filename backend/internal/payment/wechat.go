@@ -42,6 +42,12 @@ type Gateway struct {
 	sessionClient *http.Client
 }
 
+// NewIdentityGateway creates the WeChat session client without initializing
+// payment signing or notification verification.
+func NewIdentityGateway(cfg config.WeChatPayConfig) *Gateway {
+	return &Gateway{config: cfg, sessionClient: &http.Client{Timeout: 10 * time.Second}}
+}
+
 func NewGateway(ctx context.Context, cfg config.WeChatPayConfig) (*Gateway, error) {
 	if !cfg.Configured() {
 		return nil, errors.New("WeChat Pay is not fully configured")

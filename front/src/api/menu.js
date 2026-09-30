@@ -1,6 +1,6 @@
 import mpx from '@mpxjs/core'
 
-export const DEFAULT_MERCHANT_ID = process.env.VUE_APP_MERCHANT_ID || 'demo-merchant'
+export const DEFAULT_MERCHANT_ID = process.env.VUE_APP_MERCHANT_ID || 'zhifool-merchant'
 export const DEFAULT_STORE_ID = 'default'
 
 const apiBaseUrl = process.env.VUE_APP_API_BASE_URL || 'https://mendian.zhifool.com'
@@ -68,27 +68,38 @@ function withStore(path, storeId) {
   return `${path}?storeId=${encodeURIComponent(storeId)}`
 }
 
-export function getCartItems(merchantId, cartId, storeId) {
-  return request(withStore(`/api/merchants/${encodeURIComponent(merchantId)}/carts/${encodeURIComponent(cartId)}/items`, storeId))
+async function getWechatCode() {
+  const result = await mpx.login()
+  if (!result || !result.code) throw new Error('微信登录失败，请重试')
+  return result.code
 }
 
-export function createCartItem(merchantId, cartId, data, storeId) {
+export async function getCartItems(merchantId, cartId, storeId) {
+  const code = await getWechatCode()
+  return request(`${withStore(`/api/merchants/${encodeURIComponent(merchantId)}/carts/${encodeURIComponent(cartId)}/items`, storeId)}&code=${encodeURIComponent(code)}`)
+}
+
+export async function createCartItem(merchantId, cartId, data, storeId) {
+  const code = await getWechatCode()
   return request(withStore(`/api/merchants/${encodeURIComponent(merchantId)}/carts/${encodeURIComponent(cartId)}/items`, storeId), {
     method: 'POST',
-    data
+    data: { ...data, code }
   })
 }
 
-export function updateCartItem(merchantId, cartId, itemId, quantity, storeId) {
+export async function updateCartItem(merchantId, cartId, itemId, quantity, storeId) {
+  const code = await getWechatCode()
   return request(withStore(`/api/merchants/${encodeURIComponent(merchantId)}/carts/${encodeURIComponent(cartId)}/items/${encodeURIComponent(itemId)}`, storeId), {
     method: 'PATCH',
-    data: { quantity }
+    data: { quantity, code }
   })
 }
 
-export function removeCartItem(merchantId, cartId, itemId, storeId) {
+export async function removeCartItem(merchantId, cartId, itemId, storeId) {
+  const code = await getWechatCode()
   return request(withStore(`/api/merchants/${encodeURIComponent(merchantId)}/carts/${encodeURIComponent(cartId)}/items/${encodeURIComponent(itemId)}`, storeId), {
-    method: 'DELETE'
+    method: 'DELETE',
+    data: { code }
   })
 }
 
@@ -140,12 +151,12 @@ export function markAllMemberMessagesRead(merchantId, code) {
   return request(`/api/merchants/${encodeURIComponent(merchantId)}/messages/read-all`, { method: 'POST', data: { code } })
 }
 
-export function getMemberBenefits(merchantId, kind, code) {
-  return request(`/api/merchants/${encodeURIComponent(merchantId)}/benefits/${encodeURIComponent(kind)}/list`, { method: 'POST', data: { code } })
+export function getMemberBenefits(merchantId, kind, code, storeId) {
+  return request(`/api/merchants/${encodeURIComponent(merchantId)}/benefits/${encodeURIComponent(kind)}/list`, { method: 'POST', data: { code, storeId } })
 }
 
-export function claimMemberBenefit(merchantId, kind, redeemCode, code) {
-  return request(`/api/merchants/${encodeURIComponent(merchantId)}/benefits/${encodeURIComponent(kind)}/claim`, { method: 'POST', data: { code, redeemCode } })
+export function claimMemberBenefit(merchantId, kind, redeemCode, code, storeId) {
+  return request(`/api/merchants/${encodeURIComponent(merchantId)}/benefits/${encodeURIComponent(kind)}/claim`, { method: 'POST', data: { code, redeemCode, storeId } })
 }
 
 export function getInvoiceRequests(merchantId, code) {
@@ -191,6 +202,8 @@ export function createPaymentOrder(merchantId, cartId, code, storeId, fulfillmen
   })
 }
 
-export function getPaymentOrder(merchantId, cartId, orderNo, storeId) {
-  return request(withStore(`/api/merchants/${encodeURIComponent(merchantId)}/carts/${encodeURIComponent(cartId)}/orders/${encodeURIComponent(orderNo)}`, storeId))
+export async function getPaymentOrder(merchantId, cartId, orderNo, storeId) {
+  const code = await getWechatCode()
+  const path = `${withStore(`/api/merchants/${encodeURIComponent(merchantId)}/carts/${encodeURIComponent(cartId)}/orders/${encodeURIComponent(orderNo)}`, storeId)}&code=${encodeURIComponent(code)}`
+  return request(path)
 }

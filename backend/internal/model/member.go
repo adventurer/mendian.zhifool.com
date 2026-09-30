@@ -61,6 +61,7 @@ func (InvoiceRequest) TableName() string { return "invoice_requests" }
 type MemberBenefitCode struct {
 	MerchantID     string     `json:"-" gorm:"primaryKey;size:64"`
 	Code           string     `json:"code" gorm:"primaryKey;size:64"`
+	StoreID        string     `json:"storeId,omitempty" gorm:"size:64;not null;default:'';index"`
 	Kind           string     `json:"kind" gorm:"size:16;not null"`
 	Title          string     `json:"title" gorm:"size:128;not null"`
 	Description    string     `json:"description" gorm:"size:255;not null;default:''"`
@@ -79,6 +80,7 @@ type MemberBenefit struct {
 	ID             uint       `json:"id" gorm:"primaryKey;autoIncrement"`
 	ClaimNo        string     `json:"claimNo" gorm:"size:32;uniqueIndex"`
 	MerchantID     string     `json:"-" gorm:"size:64;not null;uniqueIndex:idx_member_benefit_source,priority:1;index:idx_member_benefit_owner,priority:1"`
+	StoreID        string     `json:"storeId,omitempty" gorm:"size:64;not null;default:'';index"`
 	AppID          string     `json:"-" gorm:"size:64;not null;uniqueIndex:idx_member_benefit_source,priority:2;index:idx_member_benefit_owner,priority:2"`
 	OpenID         string     `json:"-" gorm:"size:128;not null;uniqueIndex:idx_member_benefit_source,priority:3;index:idx_member_benefit_owner,priority:3"`
 	SourceCode     string     `json:"sourceCode" gorm:"size:64;not null;uniqueIndex:idx_member_benefit_source,priority:4"`

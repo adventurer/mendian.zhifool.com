@@ -56,7 +56,10 @@ func main() {
 		}
 		ctx.JSON(iris.Map{"status": "ok"})
 	})
-	api.RegisterRoutes(app, db)
+	identityGateways := make(map[string]*payment.Gateway)
+	for _, identityConfig := range cfg.WeChatPay.IdentityConfigs() {
+		identityGateways[identityConfig.MerchantID] = payment.NewIdentityGateway(identityConfig)
+	}
 	paymentGateways := make(map[string]*payment.Gateway)
 	for _, payConfig := range cfg.WeChatPay.MerchantConfigs() {
 		paymentGateway, gatewayErr := payment.NewGateway(context.Background(), payConfig)
@@ -69,9 +72,11 @@ func main() {
 	if len(paymentGateways) == 0 && len(cfg.WeChatPay.MerchantConfigs()) > 0 {
 		log.Printf("WeChat Pay unavailable for all configured merchants")
 	}
-	api.RegisterFavoriteRoutes(app, db, paymentGateways)
-	api.RegisterMemberRoutes(app, db, paymentGateways)
-	api.RegisterPaymentRoutesForMerchants(app, db, paymentGateways)
+	api.RegisterRoutes(app, db, identityGateways)
+	api.RegisterMerchantAdminRoutes(app, db)
+	api.RegisterFavoriteRoutes(app, db, identityGateways)
+	api.RegisterMemberRoutes(app, db, identityGateways)
+	api.RegisterPaymentRoutesForMerchants(app, db, paymentGateways, identityGateways)
 
 	address := net.JoinHostPort(cfg.Server.Host, strconv.Itoa(cfg.Server.Port))
 	runner := iris.Addr(address)

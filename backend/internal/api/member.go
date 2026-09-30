@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"os"
@@ -33,9 +34,11 @@ type invoiceCreateRequest struct {
 type benefitRequest struct {
 	Code       string `json:"code"`
 	RedeemCode string `json:"redeemCode"`
+	StoreID    string `json:"storeId"`
 }
 
 type benefitCodeRequest struct {
+	StoreID        string     `json:"storeId"`
 	Kind           string     `json:"kind"`
 	Code           string     `json:"code"`
 	Title          string     `json:"title"`
@@ -128,10 +131,10 @@ func RegisterMemberRoutes(app *iris.Application, db *gorm.DB, gateways map[strin
 	for _, kind := range []string{"coupon", "gift"} {
 		benefitKind := kind
 		app.Post("/api/merchants/{merchantId:string}/benefits/"+benefitKind+"/list", func(ctx iris.Context) {
-			var req memberRequest
-			if err := ctx.ReadJSON(&req); err != nil {
+			var req benefitRequest
+			if err := ctx.ReadJSON(&req); err != nil || strings.TrimSpace(req.StoreID) == "" {
 				ctx.StatusCode(400)
-				ctx.JSON(iris.Map{"error": "invalid request body"})
+				ctx.JSON(iris.Map{"error": "store ID is required"})
 				return
 			}
 			gateway, openID, ok := resolve(ctx, req.Code)
@@ -145,7 +148,7 @@ func RegisterMemberRoutes(app *iris.Application, db *gorm.DB, gateways map[strin
 				return
 			}
 			var benefits []model.MemberBenefit
-			if err := db.Where(owner).Where("status IN ? AND (status = ? OR expires_at IS NULL OR expires_at > ?)", []string{"available", "used"}, "used", time.Now()).Order("created_at DESC, id DESC").Find(&benefits).Error; err != nil {
+			if err := db.Where(owner).Where("(store_id = ? OR store_id = '')", strings.TrimSpace(req.StoreID)).Where("status IN ? AND (status = ? OR expires_at IS NULL OR expires_at > ?)", []string{"available", "used"}, "used", time.Now()).Order("created_at DESC, id DESC").Find(&benefits).Error; err != nil {
 				ctx.StatusCode(500)
 				ctx.JSON(iris.Map{"error": "failed to load benefits"})
 				return
@@ -154,9 +157,9 @@ func RegisterMemberRoutes(app *iris.Application, db *gorm.DB, gateways map[strin
 		})
 		app.Post("/api/merchants/{merchantId:string}/benefits/"+benefitKind+"/claim", func(ctx iris.Context) {
 			var req benefitRequest
-			if err := ctx.ReadJSON(&req); err != nil || strings.TrimSpace(req.RedeemCode) == "" {
+			if err := ctx.ReadJSON(&req); err != nil || strings.TrimSpace(req.RedeemCode) == "" || strings.TrimSpace(req.StoreID) == "" {
 				ctx.StatusCode(400)
-				ctx.JSON(iris.Map{"error": "redemption code is required"})
+				ctx.JSON(iris.Map{"error": "redemption code and store ID are required"})
 				return
 			}
 			gateway, openID, ok := resolve(ctx, req.Code)
@@ -164,10 +167,13 @@ func RegisterMemberRoutes(app *iris.Application, db *gorm.DB, gateways map[strin
 				return
 			}
 			merchantID := ctx.Params().Get("merchantId")
+			if _, ok := requireActiveStoreID(ctx, db, merchantID, strings.TrimSpace(req.StoreID)); !ok {
+				return
+			}
 			var claimed model.MemberBenefit
 			err := db.Transaction(func(tx *gorm.DB) error {
 				var code model.MemberBenefitCode
-				if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("merchant_id = ? AND code = ? AND kind = ? AND is_active = ?", merchantID, strings.TrimSpace(req.RedeemCode), benefitKind, true).First(&code).Error; err != nil {
+				if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("merchant_id = ? AND code = ? AND kind = ? AND is_active = ? AND (store_id = ? OR store_id = '')", merchantID, strings.TrimSpace(req.RedeemCode), benefitKind, true, strings.TrimSpace(req.StoreID)).First(&code).Error; err != nil {
 					return err
 				}
 				if code.ExpiresAt != nil && !code.ExpiresAt.After(time.Now()) {
@@ -180,7 +186,7 @@ func RegisterMemberRoutes(app *iris.Application, db *gorm.DB, gateways map[strin
 				if _, err := rand.Read(claimRandom[:]); err != nil {
 					return err
 				}
-				claimed = model.MemberBenefit{ClaimNo: "ZT" + strings.ToUpper(hex.EncodeToString(claimRandom[:])), MerchantID: merchantID, AppID: gateway.AppID(), OpenID: openID, SourceCode: code.Code, Kind: code.Kind, Title: code.Title, Description: code.Description, DiscountAmount: code.DiscountAmount, MinimumAmount: code.MinimumAmount, ExpiresAt: code.ExpiresAt, Status: "available"}
+				claimed = model.MemberBenefit{ClaimNo: "ZT" + strings.ToUpper(hex.EncodeToString(claimRandom[:])), MerchantID: merchantID, StoreID: code.StoreID, AppID: gateway.AppID(), OpenID: openID, SourceCode: code.Code, Kind: code.Kind, Title: code.Title, Description: code.Description, DiscountAmount: code.DiscountAmount, MinimumAmount: code.MinimumAmount, ExpiresAt: code.ExpiresAt, Status: "available"}
 				if err := tx.Create(&claimed).Error; err != nil {
 					return err
 				}
@@ -211,15 +217,7 @@ func RegisterMemberRoutes(app *iris.Application, db *gorm.DB, gateways map[strin
 		})
 	}
 	app.Post("/api/admin/merchants/{merchantId:string}/benefit-codes", func(ctx iris.Context) {
-		token := os.Getenv("MEMBER_BENEFITS_ADMIN_TOKEN")
-		if token == "" {
-			ctx.StatusCode(http.StatusServiceUnavailable)
-			ctx.JSON(iris.Map{"error": "benefit code management is not configured"})
-			return
-		}
-		if !hmac.Equal([]byte(ctx.GetHeader("X-Operator-Token")), []byte(token)) {
-			ctx.StatusCode(http.StatusUnauthorized)
-			ctx.JSON(iris.Map{"error": "unauthorized"})
+		if !authorizeMemberOperator(ctx) {
 			return
 		}
 		var req benefitCodeRequest
@@ -228,7 +226,14 @@ func RegisterMemberRoutes(app *iris.Application, db *gorm.DB, gateways map[strin
 			ctx.JSON(iris.Map{"error": "invalid benefit code"})
 			return
 		}
-		code := model.MemberBenefitCode{MerchantID: ctx.Params().Get("merchantId"), Code: strings.TrimSpace(req.Code), Kind: req.Kind, Title: strings.TrimSpace(req.Title), Description: strings.TrimSpace(req.Description), DiscountAmount: req.DiscountAmount, MinimumAmount: req.MinimumAmount, ExpiresAt: req.ExpiresAt, MaxClaims: req.MaxClaims, IsActive: true}
+		merchantID := ctx.Params().Get("merchantId")
+		storeID := strings.TrimSpace(req.StoreID)
+		if storeID != "" {
+			if _, ok := requireActiveStoreID(ctx, db, merchantID, storeID); !ok {
+				return
+			}
+		}
+		code := model.MemberBenefitCode{MerchantID: merchantID, StoreID: storeID, Code: strings.TrimSpace(req.Code), Kind: req.Kind, Title: strings.TrimSpace(req.Title), Description: strings.TrimSpace(req.Description), DiscountAmount: req.DiscountAmount, MinimumAmount: req.MinimumAmount, ExpiresAt: req.ExpiresAt, MaxClaims: req.MaxClaims, IsActive: true}
 		if code.Kind == "gift" && code.DiscountAmount != 0 {
 			ctx.StatusCode(400)
 			ctx.JSON(iris.Map{"error": "gift benefits cannot discount an order"})
@@ -556,10 +561,19 @@ func RegisterMemberRoutes(app *iris.Application, db *gorm.DB, gateways map[strin
 }
 
 func authorizeMemberOperator(ctx iris.Context) bool {
-	token := os.Getenv("MEMBER_BENEFITS_ADMIN_TOKEN")
+	merchantID := strings.TrimSpace(ctx.Params().Get("merchantId"))
+	tokens := make(map[string]string)
+	if raw := os.Getenv("MEMBER_BENEFITS_ADMIN_TOKENS"); raw != "" {
+		if err := json.Unmarshal([]byte(raw), &tokens); err != nil {
+			ctx.StatusCode(http.StatusServiceUnavailable)
+			ctx.JSON(iris.Map{"error": "member operator API configuration is invalid"})
+			return false
+		}
+	}
+	token := tokens[merchantID]
 	if token == "" {
 		ctx.StatusCode(http.StatusServiceUnavailable)
-		ctx.JSON(iris.Map{"error": "member operator API is not configured"})
+		ctx.JSON(iris.Map{"error": "member operator API is not configured for this merchant"})
 		return false
 	}
 	if !hmac.Equal([]byte(ctx.GetHeader("X-Operator-Token")), []byte(token)) {

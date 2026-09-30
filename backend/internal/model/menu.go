@@ -80,6 +80,8 @@ type CartItem struct {
 	MerchantID string  `json:"merchantId" gorm:"size:64;not null;index:idx_cart_items_scope,priority:1;index:idx_cart_items_store_cart,priority:1"`
 	StoreID    string  `json:"storeId" gorm:"size:64;not null;default:default;index:idx_cart_items_store_cart,priority:2"`
 	CartID     string  `json:"cartId" gorm:"size:64;not null;index:idx_cart_items_scope,priority:2;index:idx_cart_items_store_cart,priority:3"`
+	AppID      string  `json:"-" gorm:"size:64;not null;default:'';index:idx_cart_items_owner,priority:1"`
+	OpenID     string  `json:"-" gorm:"size:128;not null;default:'';index:idx_cart_items_owner,priority:2"`
 	ProductID  string  `json:"productId" gorm:"size:128;not null;index"`
 	Name       string  `json:"name" gorm:"size:255;not null"`
 	Quantity   int     `json:"quantity" gorm:"not null"`

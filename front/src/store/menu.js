@@ -17,7 +17,7 @@ export const useMenuStore = defineStore('menu', {
     storeId: DEFAULT_STORE_ID,
     stores: [],
     cartId: '',
-    brandName: '知甜蛋糕',
+    brandName: '知赋小程序',
     series: [],
     activeSeriesId: 'seasonal',
     selectedProductId: null,

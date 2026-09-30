@@ -1,0 +1,872 @@
+
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by chunk 64.6 KiB (auxiliary name: pages/index)
+    assets by status 4.36 KiB [1m[33m[compared for emit][39m[22m 10 assets
+    assets by status 60.2 KiB [1m[32m[emitted][39m[22m
+      asset [1m[32mpages/index.wxss[39m[22m 41 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      + 2 assets
+  assets by path [1m[32m*.js[39m[22m 830 KiB
+    asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+    asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+  assets by path [1m[32m*.json[39m[22m 1.14 KiB
+    asset [1m[32mproject.config.json[39m[22m 949 bytes [1m[33m[compared for emit][39m[22m [from: static/wx/project.config.json] [1m[32m[copied][39m[22m
+    asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+  asset [1m[32mpages/index.js[39m[22m 159 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+  asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 4290 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 995 KiB [1m[32m[cached][39m[22m 14 assets
+  assets by path [1m[32m.[39m[22m 61.5 KiB
+    assets by path [1m[32mpages/[39m[22m 60.2 KiB
+      asset [1m[32mpages/index.wxss[39m[22m 41 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 19.1 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 936 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 5.28 KiB [1m[32m[cached][39m[22m 11 assets
+  assets by status 1.03 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 220 KiB
+      asset [1m[32mpages/index.js[39m[22m 160 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 41 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 19.1 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1173 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 5.28 KiB [1m[32m[cached][39m[22m 11 assets
+  assets by status 1.03 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 222 KiB
+      asset [1m[32mpages/index.js[39m[22m 161 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 41 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 20.1 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1464 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 5.28 KiB [1m[32m[cached][39m[22m 11 assets
+  assets by status 1.04 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 236 KiB
+      asset [1m[32mpages/index.js[39m[22m 175 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 41 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 20.2 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1480 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 5.28 KiB [1m[32m[cached][39m[22m 11 assets
+  assets by status 1.04 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 235 KiB
+      asset [1m[32mpages/index.js[39m[22m 172 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 42.8 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 20.2 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1614 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 5.28 KiB [1m[32m[cached][39m[22m 11 assets
+  assets by status 1.04 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 235 KiB
+      asset [1m[32mpages/index.js[39m[22m 172 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 42.8 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 20.2 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1583 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 5.28 KiB [1m[32m[cached][39m[22m 11 assets
+  assets by status 1.04 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 234 KiB
+      asset [1m[32mpages/index.js[39m[22m 172 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 42.1 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 20.2 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1582 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.04 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 234 KiB
+      asset [1m[32mpages/index.js[39m[22m 171 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 42.1 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 20.2 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1553 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.04 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 237 KiB
+      asset [1m[32mpages/index.js[39m[22m 174 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 42.1 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 20.2 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1391 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.04 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 238 KiB
+      asset [1m[32mpages/index.js[39m[22m 175 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 42.1 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 21.3 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1791 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.06 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 250 KiB
+      asset [1m[32mpages/index.js[39m[22m 179 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 42.1 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 29.5 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1725 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.06 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 251 KiB
+      asset [1m[32mpages/index.js[39m[22m 179 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 42.1 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 29.5 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1334 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.08 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 277 KiB
+      asset [1m[32mpages/index.js[39m[22m 205 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 42.1 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 29.5 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1767 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.09 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 283 KiB
+      asset [1m[32mpages/index.js[39m[22m 205 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 48.8 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 29.5 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1769 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.09 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 284 KiB
+      asset [1m[32mpages/index.js[39m[22m 205 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 48.8 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 29.7 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1503 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.09 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 284 KiB
+      asset [1m[32mpages/index.js[39m[22m 206 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 48.8 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 29.7 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1358 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.09 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 286 KiB
+      asset [1m[32mpages/index.js[39m[22m 206 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 48.8 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 31 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1756 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.1 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 290 KiB
+      asset [1m[32mpages/index.js[39m[22m 211 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 48.8 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 31 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1770 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.1 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 291 KiB
+      asset [1m[32mpages/index.js[39m[22m 211 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 48.8 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 31.2 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1880 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.1 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 291 KiB
+      asset [1m[32mpages/index.js[39m[22m 211 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 49.1 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 31.2 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1580 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.1 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 291 KiB
+      asset [1m[32mpages/index.js[39m[22m 211 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 49.1 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 31.2 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1751 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.1 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 291 KiB
+      asset [1m[32mpages/index.js[39m[22m 211 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 49.1 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 31.3 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1580 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.1 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 292 KiB
+      asset [1m[32mpages/index.js[39m[22m 211 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 49.1 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 31.3 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1788 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.1 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 292 KiB
+      asset [1m[32mpages/index.js[39m[22m 211 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 49.8 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 31.3 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1672 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.1 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 298 KiB
+      asset [1m[32mpages/index.js[39m[22m 217 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 49.8 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 31.3 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1340 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.1 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 298 KiB
+      asset [1m[32mpages/index.js[39m[22m 217 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 49.8 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 31.3 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1690 ms
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G
+
+[2K[1A[2K[1A[2K[G√ wx-development
+  Compiled successfully
+  assets by status 4.73 KiB [1m[32m[cached][39m[22m 10 assets
+  assets by status 1.1 MiB [1m[32m[emitted][39m[22m
+    assets by path [1m[32mpages/[39m[22m 299 KiB
+      asset [1m[32mpages/index.js[39m[22m 218 KiB [1m[32m[emitted][39m[22m (name: pages/index) 1 related asset
+      asset [1m[32mpages/index.wxss[39m[22m 49.8 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.wxml[39m[22m 31.3 KiB [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+      asset [1m[32mpages/index.json[39m[22m 123 bytes [1m[32m[emitted][39m[22m (auxiliary name: pages/index)
+    assets by path [1m[32m*.js[39m[22m 830 KiB
+      asset [1m[33mbundle.js[39m[22m [1m[33m741 KiB[39m[22m [1m[32m[emitted][39m[22m [1m[33m[big][39m[22m (name: bundle) (id hint: main) 1 related asset
+      asset [1m[32mapp.js[39m[22m 88.7 KiB [1m[32m[emitted][39m[22m (name: app) 1 related asset
+    assets by chunk 246 bytes (auxiliary name: app)
+      asset [1m[32mapp.json[39m[22m 217 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+      asset [1m[32mapp.wxss[39m[22m 29 bytes [1m[32m[emitted][39m[22m (auxiliary name: app)
+    asset [1m[32mstyles/uno.wxss[39m[22m 1.09 KiB [1m[32m[emitted][39m[22m
+  [1mwx-development[39m[22m (webpack 5.111.1) compiled [1m[32msuccessfully[39m[22m in 1427 ms
+

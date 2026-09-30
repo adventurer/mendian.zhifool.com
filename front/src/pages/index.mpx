@@ -864,7 +864,7 @@ createPage({
       try {
         const login = await mpx.login()
         if (!login || !login.code) throw new Error('WeChat login code is missing')
-        const result = await getMemberBenefits(this.menuStore.merchantId, kind, login.code)
+        const result = await getMemberBenefits(this.menuStore.merchantId, kind, login.code, this.menuStore.storeId)
         this.memberBenefits = (result.benefits || []).map(item => ({
           ...item,
           discountAmountText: formatMoney(item.discountAmount),
@@ -888,7 +888,7 @@ createPage({
         const login = await mpx.login()
         if (!login || !login.code) throw new Error('WeChat login code is missing')
         const kind = this.currentPage === 'gifts' ? 'gift' : 'coupon'
-        await claimMemberBenefit(this.menuStore.merchantId, kind, this.benefitRedeemCode, login.code)
+        await claimMemberBenefit(this.menuStore.merchantId, kind, this.benefitRedeemCode, login.code, this.menuStore.storeId)
         this.benefitRedeemCode = ''
         await this.loadBenefits(kind)
         await this.loadMemberSummary()
@@ -1380,7 +1380,7 @@ createPage({
       try {
         const login = await mpx.login()
         if (!login || !login.code) throw new Error('WeChat login code is missing')
-        const result = await getMemberBenefits(this.menuStore.merchantId, 'coupon', login.code)
+        const result = await getMemberBenefits(this.menuStore.merchantId, 'coupon', login.code, this.menuStore.storeId)
         const cartTotalFen = Math.round(Number(this.menuStore.cartTotal || 0) * 100)
         this.couponOptions = (result.benefits || []).filter(item => item.status === 'available' && item.discountAmount < cartTotalFen && item.minimumAmount <= cartTotalFen).map(item => ({
           ...item,
@@ -2761,8 +2761,10 @@ createPage({
   color #cf6657
 
 .favorites-body
-  position absolute
-  inset 108rpx 0 0
+  position relative
+  flex 1
+  width 100%
+  min-height 0
   background #f2f4f1
 
 .favorites-list
@@ -2772,12 +2774,13 @@ createPage({
   box-sizing border-box
 
 .favorite-card
+  min-height 184rpx
   margin-bottom 16rpx
   padding 20rpx
   display flex
   align-items center
   gap 16rpx
-  border-radius 18rpx
+  border-radius 12rpx
   background #fff
 
 .favorite-card-main
@@ -2819,9 +2822,24 @@ createPage({
 
 .favorite-remove
   flex none
-  padding 14rpx 8rpx
-  color #9a7770
+  min-width 64rpx
+  min-height 64rpx
+  padding 0 8rpx
+  display flex
+  align-items center
+  justify-content center
+  border-radius 8rpx
+  background #f5f6f3
+  color #7b817a
   font-size 21rpx
+
+.favorites-screen
+  bottom calc(132rpx + env(safe-area-inset-bottom))
+  flex-direction column
+  align-items stretch
+  justify-content flex-start
+  background #f2f4f1
+  font-family Arial, sans-serif
 
 .account-screen
   flex-direction column

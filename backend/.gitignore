@@ -7,3 +7,9 @@
 /assets/
 mendian_server
 server.exe
+# Local merchant credentials (configure paths outside version control)
+/wechat/*/apiclient_key.pem
+/wechat/*/apiclient_cert.p12
+/wxcerts/apiclient_key.pem
+/wxcerts/apiclient_cert.p12
+/wxcerts/*.zip

@@ -10,9 +10,11 @@ import (
 	"gorm.io/gorm"
 
 	"mendian-backend/internal/model"
+	"mendian-backend/internal/payment"
 )
 
 type cartItemRequest struct {
+	Code      string            `json:"code"`
 	ProductID string            `json:"productId"`
 	Quantity  int               `json:"quantity"`
 	Options   []optionSelection `json:"options"`
@@ -24,10 +26,20 @@ type optionSelection struct {
 }
 
 type cartItemQuantityRequest struct {
-	Quantity int `json:"quantity"`
+	Quantity int    `json:"quantity"`
+	Code     string `json:"code"`
 }
 
-func RegisterRoutes(app *iris.Application, db *gorm.DB) {
+type cartOwner struct {
+	AppID  string
+	OpenID string
+}
+
+func RegisterRoutes(app *iris.Application, db *gorm.DB, configuredGateways ...map[string]*payment.Gateway) {
+	gateways := map[string]*payment.Gateway{}
+	if len(configuredGateways) > 0 && configuredGateways[0] != nil {
+		gateways = configuredGateways[0]
+	}
 	app.Get("/api/merchants/{merchantId:string}/stores", func(ctx iris.Context) {
 		var stores []model.Store
 		if err := db.Table("merchant_stores AS stores").
@@ -67,8 +79,12 @@ func RegisterRoutes(app *iris.Application, db *gorm.DB) {
 		if !ok {
 			return
 		}
+		owner, ok := resolveCartOwner(ctx, db, gateways, merchantID, ctx.URLParam("code"))
+		if !ok {
+			return
+		}
 		var items []model.CartItem
-		if err := db.Where("merchant_id = ? AND store_id = ? AND cart_id = ?", merchantID, store.StoreID, ctx.Params().Get("cartId")).Order("id ASC").Find(&items).Error; err != nil {
+		if err := db.Where("merchant_id = ? AND store_id = ? AND app_id = ? AND open_id = ? AND cart_id = ?", merchantID, store.StoreID, owner.AppID, owner.OpenID, ctx.Params().Get("cartId")).Order("id ASC").Find(&items).Error; err != nil {
 			ctx.StatusCode(http.StatusInternalServerError)
 			ctx.JSON(iris.Map{"error": "failed to load cart"})
 			return
@@ -94,9 +110,13 @@ func RegisterRoutes(app *iris.Application, db *gorm.DB) {
 			ctx.JSON(iris.Map{"error": "quantity must be between 1 and 99"})
 			return
 		}
+		owner, ok := resolveCartOwner(ctx, db, gateways, merchantID, request.Code)
+		if !ok {
+			return
+		}
 
 		result := db.Model(&model.CartItem{}).
-			Where("merchant_id = ? AND store_id = ? AND cart_id = ? AND id = ?", merchantID, store.StoreID, ctx.Params().Get("cartId"), itemID).
+			Where("merchant_id = ? AND store_id = ? AND app_id = ? AND open_id = ? AND cart_id = ? AND id = ?", merchantID, store.StoreID, owner.AppID, owner.OpenID, ctx.Params().Get("cartId"), itemID).
 			Update("quantity", request.Quantity)
 		if result.Error != nil {
 			ctx.StatusCode(http.StatusInternalServerError)
@@ -109,7 +129,7 @@ func RegisterRoutes(app *iris.Application, db *gorm.DB) {
 		}
 
 		var item model.CartItem
-		if err := db.Where("merchant_id = ? AND store_id = ? AND cart_id = ? AND id = ?", merchantID, store.StoreID, ctx.Params().Get("cartId"), itemID).First(&item).Error; err != nil {
+		if err := db.Where("merchant_id = ? AND store_id = ? AND app_id = ? AND open_id = ? AND cart_id = ? AND id = ?", merchantID, store.StoreID, owner.AppID, owner.OpenID, ctx.Params().Get("cartId"), itemID).First(&item).Error; err != nil {
 			ctx.StatusCode(http.StatusInternalServerError)
 			ctx.JSON(iris.Map{"error": "failed to load cart item"})
 			return
@@ -123,13 +143,23 @@ func RegisterRoutes(app *iris.Application, db *gorm.DB) {
 		if !ok {
 			return
 		}
+		var request cartItemQuantityRequest
+		if err := ctx.ReadJSON(&request); err != nil {
+			ctx.StatusCode(http.StatusBadRequest)
+			ctx.JSON(iris.Map{"error": "WeChat login code is required"})
+			return
+		}
+		owner, ok := resolveCartOwner(ctx, db, gateways, merchantID, request.Code)
+		if !ok {
+			return
+		}
 		itemID, err := strconv.ParseUint(ctx.Params().Get("itemID"), 10, 64)
 		if err != nil {
 			ctx.StatusCode(http.StatusBadRequest)
 			ctx.JSON(iris.Map{"error": "invalid cart item ID"})
 			return
 		}
-		result := db.Where("merchant_id = ? AND store_id = ? AND cart_id = ? AND id = ?", merchantID, store.StoreID, ctx.Params().Get("cartId"), itemID).Delete(&model.CartItem{})
+		result := db.Where("merchant_id = ? AND store_id = ? AND app_id = ? AND open_id = ? AND cart_id = ? AND id = ?", merchantID, store.StoreID, owner.AppID, owner.OpenID, ctx.Params().Get("cartId"), itemID).Delete(&model.CartItem{})
 		if result.Error != nil {
 			ctx.StatusCode(http.StatusInternalServerError)
 			ctx.JSON(iris.Map{"error": "failed to remove cart item"})
@@ -154,6 +184,10 @@ func RegisterRoutes(app *iris.Application, db *gorm.DB) {
 			ctx.JSON(iris.Map{"error": "invalid request body"})
 			return
 		}
+		owner, ok := resolveCartOwner(ctx, db, gateways, merchantID, request.Code)
+		if !ok {
+			return
+		}
 
 		menu, err := findMenu(db, merchantID, store.StoreID)
 		if err != nil {
@@ -173,6 +207,8 @@ func RegisterRoutes(app *iris.Application, db *gorm.DB) {
 			return
 		}
 		createdItem.StoreID = store.StoreID
+		createdItem.AppID = owner.AppID
+		createdItem.OpenID = owner.OpenID
 		if err := db.Create(&createdItem).Error; err != nil {
 			ctx.StatusCode(http.StatusInternalServerError)
 			ctx.JSON(iris.Map{"error": "failed to save cart item"})
@@ -186,6 +222,11 @@ func RegisterRoutes(app *iris.Application, db *gorm.DB) {
 
 func requireActiveStore(ctx iris.Context, db *gorm.DB, merchantID string) (model.Store, bool) {
 	storeID := strings.TrimSpace(ctx.URLParam("storeId"))
+	return requireActiveStoreID(ctx, db, merchantID, storeID)
+}
+
+func requireActiveStoreID(ctx iris.Context, db *gorm.DB, merchantID, storeID string) (model.Store, bool) {
+	storeID = strings.TrimSpace(storeID)
 	if storeID == "" {
 		ctx.StatusCode(http.StatusBadRequest)
 		ctx.JSON(iris.Map{"error": "store ID is required"})
@@ -203,6 +244,31 @@ func requireActiveStore(ctx iris.Context, db *gorm.DB, merchantID string) (model
 		return model.Store{}, false
 	}
 	return store, true
+}
+
+func resolveCartOwner(ctx iris.Context, db *gorm.DB, gateways map[string]*payment.Gateway, merchantID, code string) (cartOwner, bool) {
+	gateway := gateways[merchantID]
+	if gateway == nil {
+		ctx.NotFound()
+		return cartOwner{}, false
+	}
+	if strings.TrimSpace(code) == "" {
+		ctx.StatusCode(http.StatusBadRequest)
+		ctx.JSON(iris.Map{"error": "WeChat login code is required"})
+		return cartOwner{}, false
+	}
+	openID, err := gateway.ResolveOpenID(ctx.Request().Context(), code)
+	if err != nil {
+		ctx.StatusCode(http.StatusUnauthorized)
+		ctx.JSON(iris.Map{"error": "WeChat login failed; please retry"})
+		return cartOwner{}, false
+	}
+	if err := persistWeChatUser(db, gateway.AppID(), openID); err != nil {
+		ctx.StatusCode(http.StatusInternalServerError)
+		ctx.JSON(iris.Map{"error": "failed to save WeChat user"})
+		return cartOwner{}, false
+	}
+	return cartOwner{AppID: gateway.AppID(), OpenID: openID}, true
 }
 
 func findMenu(db *gorm.DB, merchantID, storeID string) (model.Menu, error) {

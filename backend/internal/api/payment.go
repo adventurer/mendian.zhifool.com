@@ -7,6 +7,7 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/kataras/iris/v12"
@@ -61,15 +62,19 @@ func RegisterPaymentRoutes(app *iris.Application, db *gorm.DB, gateway *payment.
 	if gateway != nil {
 		gateways[gateway.MerchantID()] = gateway
 	}
-	registerPaymentRoutes(app, db, gateways)
+	registerPaymentRoutes(app, db, gateways, gateways)
 }
 
-func RegisterPaymentRoutesForMerchants(app *iris.Application, db *gorm.DB, gateways map[string]*payment.Gateway) {
-	registerPaymentRoutes(app, db, gateways)
+func RegisterPaymentRoutesForMerchants(app *iris.Application, db *gorm.DB, gateways map[string]*payment.Gateway, identityGateways ...map[string]*payment.Gateway) {
+	identities := gateways
+	if len(identityGateways) > 0 && identityGateways[0] != nil {
+		identities = identityGateways[0]
+	}
+	registerPaymentRoutes(app, db, gateways, identities)
 }
 
-func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[string]*payment.Gateway) {
-	registerAddressRoutes(app, db, gateways)
+func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways, identityGateways map[string]*payment.Gateway) {
+	registerAddressRoutes(app, db, identityGateways)
 	readWechatLoginRequest := func(ctx iris.Context) (wechatLoginRequest, bool) {
 		var request wechatLoginRequest
 		if err := ctx.ReadJSON(&request); err != nil || request.Code == "" {
@@ -94,7 +99,7 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 		ctx.JSON(iris.Map{"loggedIn": true})
 	}
 	app.Post("/api/merchants/{merchantId:string}/auth/wechat/login", func(ctx iris.Context) {
-		gateway := gateways[ctx.Params().Get("merchantId")]
+		gateway := identityGateways[ctx.Params().Get("merchantId")]
 		if gateway == nil {
 			ctx.NotFound()
 			return
@@ -106,7 +111,7 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 		handleWechatLogin(ctx, gateway, request)
 	})
 	app.Post("/api/auth/wechat/login", func(ctx iris.Context) {
-		if len(gateways) == 0 {
+		if len(identityGateways) == 0 {
 			ctx.StatusCode(http.StatusServiceUnavailable)
 			ctx.JSON(iris.Map{"error": "WeChat login is not configured"})
 			return
@@ -115,9 +120,9 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 		if !ok {
 			return
 		}
-		gateway := gateways[request.MerchantID]
-		if request.MerchantID == "" && len(gateways) == 1 {
-			for _, configuredGateway := range gateways {
+		gateway := identityGateways[request.MerchantID]
+		if request.MerchantID == "" && len(identityGateways) == 1 {
+			for _, configuredGateway := range identityGateways {
 				gateway = configuredGateway
 			}
 		}
@@ -135,7 +140,7 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 
 	app.Post("/api/merchants/{merchantId:string}/orders/mine", func(ctx iris.Context) {
 		merchantID := ctx.Params().Get("merchantId")
-		gateway := gateways[merchantID]
+		gateway := identityGateways[merchantID]
 		if gateway == nil {
 			ctx.NotFound()
 			return
@@ -274,7 +279,7 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 		err = db.Transaction(func(tx *gorm.DB) error {
 			var cartItems []model.CartItem
 			if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
-				Where("merchant_id = ? AND store_id = ? AND cart_id = ?", merchantID, store.StoreID, cartID).
+				Where("merchant_id = ? AND store_id = ? AND app_id = ? AND open_id = ? AND cart_id = ?", merchantID, store.StoreID, gateway.AppID(), openID, cartID).
 				Order("id ASC").Find(&cartItems).Error; err != nil {
 				return err
 			}
@@ -286,7 +291,7 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 			var benefit model.MemberBenefit
 			if request.BenefitID != nil {
 				if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
-					Where("id = ? AND merchant_id = ? AND app_id = ? AND open_id = ? AND kind = ? AND status = ?", *request.BenefitID, merchantID, gateway.AppID(), openID, "coupon", "available").
+					Where("id = ? AND merchant_id = ? AND app_id = ? AND open_id = ? AND kind = ? AND status = ? AND (store_id = ? OR store_id = '')", *request.BenefitID, merchantID, gateway.AppID(), openID, "coupon", "available", store.StoreID).
 					First(&benefit).Error; err != nil {
 					return errInvalidCoupon
 				}
@@ -378,13 +383,29 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 
 	app.Get("/api/merchants/{merchantId:string}/carts/{cartId:string}/orders/{orderNo:string}", func(ctx iris.Context) {
 		merchantID := ctx.Params().Get("merchantId")
+		gateway := identityGateways[merchantID]
+		if gateway == nil {
+			ctx.NotFound()
+			return
+		}
 		store, ok := requireActiveStore(ctx, db, merchantID)
 		if !ok {
 			return
 		}
+		if strings.TrimSpace(ctx.URLParam("code")) == "" {
+			ctx.StatusCode(http.StatusBadRequest)
+			ctx.JSON(iris.Map{"error": "WeChat login code is required"})
+			return
+		}
+		openID, err := gateway.ResolveOpenID(ctx.Request().Context(), ctx.URLParam("code"))
+		if err != nil {
+			ctx.StatusCode(http.StatusUnauthorized)
+			ctx.JSON(iris.Map{"error": "WeChat login failed; please retry"})
+			return
+		}
 		var order model.PaymentOrder
-		err := db.Select("merchant_id", "store_id", "store_name", "fulfillment_type", "cart_id", "order_no", "status", "total_amount", "discount_amount", "currency", "items", "paid_at").
-			Where("merchant_id = ? AND store_id = ? AND cart_id = ? AND order_no = ?", merchantID, store.StoreID, ctx.Params().Get("cartId"), ctx.Params().Get("orderNo")).
+		err = db.Select("merchant_id", "store_id", "store_name", "fulfillment_type", "cart_id", "order_no", "status", "total_amount", "discount_amount", "currency", "items", "paid_at").
+			Where("merchant_id = ? AND store_id = ? AND payer_open_id = ? AND cart_id = ? AND order_no = ?", merchantID, store.StoreID, openID, ctx.Params().Get("cartId"), ctx.Params().Get("orderNo")).
 			First(&order).Error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			ctx.NotFound()
@@ -472,7 +493,7 @@ func registerPaymentRoutes(app *iris.Application, db *gorm.DB, gateways map[stri
 			if result.RowsAffected != 1 {
 				return errors.New("payment order status changed")
 			}
-			if err := removePurchasedCartItems(tx, order); err != nil {
+			if err := removePurchasedCartItems(tx, order, gateway.AppID()); err != nil {
 				return err
 			}
 			if err := recordMemberPurchase(tx, order, gateway.AppID()); err != nil {
@@ -563,11 +584,11 @@ func newOrderNo() (string, error) {
 	return "MD" + time.Now().UTC().Format("060102150405") + hex.EncodeToString(random[:]), nil
 }
 
-func removePurchasedCartItems(tx *gorm.DB, order model.PaymentOrder) error {
+func removePurchasedCartItems(tx *gorm.DB, order model.PaymentOrder, appID string) error {
 	for _, purchased := range order.Items {
 		var current model.CartItem
 		err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
-			Where("merchant_id = ? AND store_id = ? AND cart_id = ? AND id = ?", order.MerchantID, order.StoreID, order.CartID, purchased.CartItemID).
+			Where("merchant_id = ? AND store_id = ? AND app_id = ? AND open_id = ? AND cart_id = ? AND id = ?", order.MerchantID, order.StoreID, appID, order.PayerOpenID, order.CartID, purchased.CartItemID).
 			First(&current).Error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			continue

@@ -58,6 +58,32 @@ func (cfg WeChatPayConfig) MerchantConfigs() []WeChatPayConfig {
 	return nil
 }
 
+// IdentityConfigs returns Mini Program credentials that can resolve login codes,
+// even when the corresponding payment gateway cannot be initialized.
+func (cfg WeChatPayConfig) IdentityConfigs() []WeChatPayConfig {
+	if len(cfg.Merchants) > 0 {
+		merchantIDs := make([]string, 0, len(cfg.Merchants))
+		for merchantID := range cfg.Merchants {
+			merchantIDs = append(merchantIDs, merchantID)
+		}
+		sort.Strings(merchantIDs)
+		configs := make([]WeChatPayConfig, 0, len(merchantIDs))
+		for _, merchantID := range merchantIDs {
+			identityConfig := cfg.Merchants[merchantID]
+			if identityConfig.AppID == "" || identityConfig.AppSecret == "" {
+				continue
+			}
+			identityConfig.MerchantID = merchantID
+			configs = append(configs, identityConfig)
+		}
+		return configs
+	}
+	if cfg.MerchantID != "" && cfg.AppID != "" && cfg.AppSecret != "" {
+		return []WeChatPayConfig{cfg}
+	}
+	return nil
+}
+
 type ServerConfig struct {
 	Host          string `yaml:"host"`
 	Port          int    `yaml:"port"`
